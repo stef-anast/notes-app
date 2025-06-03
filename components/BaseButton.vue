@@ -1,41 +1,24 @@
 <template>
   <button :class="buttonClasses" @click="$emit('click', $event)">
-    <svg
+    <component
       v-if="icon && (iconPosition === 'left' || !text)"
+      :is="IconPlus"
       :class="iconClasses"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 5V19M5 12H19"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    />
     <span v-if="text">{{ text }}</span>
-    <svg
+    <component
       v-if="icon && iconPosition === 'right' && text"
+      :is="IconPlus"
       :class="iconClasses"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 5V19M5 12H19"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    />
   </button>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
+
+// Define async component for the plus icon
+const IconPlus = defineAsyncComponent(() => import("./icons/IconPlus.vue"));
 
 interface Props {
   text?: string;

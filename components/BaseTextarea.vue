@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { ref, computed, useAttrs } from "vue";
+import { useId } from "#app";
 
 interface Props {
   modelValue: string;
@@ -53,11 +54,10 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["update:modelValue"]);
 const attrs = useAttrs();
 const isFocused = ref(false);
-const textareaId = computed(
-  () =>
-    props.id ||
-    `textarea-${attrs.id || Math.random().toString(36).substring(2, 9)}`
-);
+
+const providedId = computed(() => props.id || (attrs.id as string | undefined));
+const internalId = useId();
+const textareaId = computed(() => providedId.value || internalId);
 
 const wrapperClasses = computed(() => [
   "relative group",
