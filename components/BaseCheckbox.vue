@@ -67,7 +67,7 @@ const IconCheck = defineAsyncComponent(() => import("./icons/IconCheck.vue"));
 const IconMinus = defineAsyncComponent(() => import("./icons/IconMinus.vue"));
 
 interface Props {
-  modelValue?: boolean | any[]; // for array v-model with multiple checkboxes
+  modelValue?: boolean | string | number | any[]; // for array v-model with multiple checkboxes
   value?: any; // value for single checkbox when modelValue is an array
   indeterminate?: boolean;
   disabled?: boolean;
