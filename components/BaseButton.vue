@@ -1,32 +1,44 @@
 <template>
   <button :class="buttonClasses" @click="$emit('click', $event)">
-    <component
-      v-if="icon && (iconPosition === 'left' || !text)"
-      :is="IconPlus"
-      :class="iconClasses"
-    />
-    <span v-if="text">{{ text }}</span>
-    <component
-      v-if="icon && iconPosition === 'right' && text"
-      :is="IconPlus"
-      :class="iconClasses"
-    />
+    <template v-if="props.size === 'icon'">
+      <component
+        v-if="iconComponent"
+        :is="iconComponent"
+        :class="iconClasses"
+      />
+    </template>
+    <template v-else>
+      <component
+        v-if="props.icon && props.iconPosition === 'left' && iconComponent"
+        :is="iconComponent"
+        :class="iconClasses"
+      />
+      <span v-if="text">{{ text }}</span>
+      <component
+        v-if="
+          props.icon && props.iconPosition === 'right' && text && iconComponent
+        "
+        :is="iconComponent"
+        :class="iconClasses"
+      />
+    </template>
   </button>
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from "vue";
 
-// Define async component for the plus icon
 const IconPlus = defineAsyncComponent(() => import("./icons/IconPlus.vue"));
+const IconClose = defineAsyncComponent(() => import("./icons/IconClose.vue"));
 
 interface Props {
   text?: string;
-  variant?: "solid" | "outline";
-  color?: "primary" | "secondary";
+  variant?: "solid" | "outline" | "ghost";
+  color?: "primary" | "secondary" | "danger";
   size?: "small" | "medium" | "large" | "icon";
   icon?: boolean;
   iconPosition?: "left" | "right";
+  iconName?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -35,71 +47,102 @@ const props = withDefaults(defineProps<Props>(), {
   size: "medium",
   icon: false,
   iconPosition: "left",
+  iconName: "plus",
 });
 
 const emit = defineEmits(["click"]);
 
+const iconComponent = computed(() => {
+  if (props.iconName === "close") {
+    return IconClose;
+  }
+  if (props.iconName === "plus") {
+    return IconPlus;
+  }
+
+  return null;
+});
+
 const baseClasses =
-  "rounded-full font-medium inline-flex items-center justify-center gap-x-2 transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  "rounded-full font-medium inline-flex items-center justify-center gap-x-2 transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer";
 
 const buttonClasses = computed(() => {
   const classes = [baseClasses];
 
   // Size classes
-  switch (props.size) {
-    case "small":
-      classes.push("px-4 py-1.5 text-sm");
-      break;
-    case "large":
-      classes.push("px-6 py-3 text-base");
-      break;
-    case "icon":
-      classes.push("w-10 h-10"); // Specific for icon-only buttons
-      break;
-    case "medium":
-    default:
-      classes.push("px-5 py-2 text-base");
-      break;
+  if (props.size === "icon") {
+    classes.push("w-10 h-10 p-0");
+  } else {
+    switch (props.size) {
+      case "small":
+        classes.push("px-4 py-1.5 text-sm");
+        break;
+      case "large":
+        classes.push("px-6 py-3 text-base");
+        break;
+      case "medium":
+      default:
+        classes.push("px-5 py-2 text-base");
+        break;
+    }
   }
 
   // Variant and Color classes
   if (props.variant === "solid") {
-    if (props.color === "primary") {
+    if (props.color === "primary")
       classes.push(
         "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-600"
       );
-    } else {
-      // secondary
+    else if (props.color === "secondary")
       classes.push(
         "bg-gray-500 text-white hover:bg-gray-600 focus-visible:ring-gray-500"
       );
-    }
-  } else {
-    // outline
-    if (props.color === "primary") {
+    else if (props.color === "danger")
       classes.push(
-        "bg-white text-gray-800 border border-gray-700 hover:bg-gray-100 focus-visible:ring-gray-700"
+        "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
       );
-    } else {
-      // secondary
+  } else if (props.variant === "outline") {
+    if (props.color === "primary")
       classes.push(
-        "bg-white text-gray-500 border border-gray-400 hover:bg-gray-50 focus-visible:ring-gray-400"
+        "bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600"
       );
-    }
-  }
-
-  if (props.size === "icon" && props.text) {
-    console.warn(
-      '[BaseButton]: Text prop should not be used with size="icon". Icon-only buttons do not display text.'
+    else if (props.color === "secondary")
+      classes.push(
+        "bg-transparent text-gray-700 border border-gray-400 hover:bg-gray-50 focus-visible:ring-gray-400"
+      );
+    else if (props.color === "danger")
+      classes.push(
+        "bg-transparent text-red-600 border border-red-600 hover:bg-red-50 focus-visible:ring-red-500"
+      );
+  } else if (props.variant === "ghost") {
+    // Ghost buttons are transparent until hovered/focused, no border initially
+    classes.push(
+      "bg-transparent border-transparent focus-visible:ring-offset-0"
     );
+    if (props.color === "primary")
+      classes.push(
+        "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus-visible:ring-blue-600"
+      );
+    else if (props.color === "secondary")
+      classes.push(
+        "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 focus-visible:ring-gray-500"
+      );
+    else if (props.color === "danger")
+      classes.push(
+        "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible:ring-red-500"
+      );
+    if (props.size === "icon") classes.push("focus-visible:ring-offset-0");
   }
 
   return classes.join(" ");
 });
 
 const iconClasses = computed(() => {
-  const classes = ["w-5 h-5"]; // Default icon size
-  return classes.join(" ");
+  let sizeClass = "w-5 h-5"; // Default for text buttons
+  if (props.size === "icon") {
+    sizeClass = "w-6 h-6"; // Larger icon for dedicated icon buttons
+  }
+  return [sizeClass].join(" ");
 });
 </script>
 
