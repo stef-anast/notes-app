@@ -14,6 +14,7 @@
     :close-on-select="false"
     :searchable="true"
     :show-search-in-trigger="true"
+    :active-label-translate-x-class="'-translate-x-1'"
     v-model:search-text="searchText"
     @option-click="handleOptionClickFromBase"
   >

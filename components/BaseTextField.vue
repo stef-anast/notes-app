@@ -255,7 +255,7 @@ const labelClasses = computed(() => {
   finalClasses.push(colorClass);
 
   if (isPositionActive) {
-    finalClasses.push("text-xs scale-75 top-1.5");
+    finalClasses.push("text-xs scale-75 top-1.5 -translate-x-2");
   } else {
     finalClasses.push("top-3.5 text-base");
   }

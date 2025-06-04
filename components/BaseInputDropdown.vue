@@ -232,6 +232,7 @@ interface Props {
   searchable?: boolean;
   showSearchInTrigger?: boolean;
   searchText?: string;
+  activeLabelTranslateXClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -247,6 +248,7 @@ const props = withDefaults(defineProps<Props>(), {
   searchable: false,
   showSearchInTrigger: false,
   searchText: "",
+  activeLabelTranslateXClass: "-translate-x-3",
 });
 
 const emit = defineEmits([
@@ -319,7 +321,7 @@ const labelClasses = computed(() => {
   }
 
   const sizeAndPositionClasses = isLabelActive.value
-    ? "text-xs scale-75 top-1.5"
+    ? `text-xs scale-75 top-1.5 ${props.activeLabelTranslateXClass}`
     : "top-3.5 text-base";
 
   return [...baseStyles, colorClass, sizeAndPositionClasses];

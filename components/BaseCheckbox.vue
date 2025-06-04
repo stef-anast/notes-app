@@ -153,8 +153,6 @@ const handleChange = (event: Event) => {
 // Allows clicking on the label or visual checkbox to toggle state
 const handleLabelClick = () => {
   if (!props.disabled && inputRef.value) {
-    // We manually emit the change because programmatically changing .checked
-    // on the input doesn't trigger a change event itself.
     const currentlyChecked = isChecked.value;
     let newValue;
 

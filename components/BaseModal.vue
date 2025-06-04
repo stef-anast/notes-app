@@ -61,7 +61,6 @@
             <!-- Body -->
             <div class="p-5 overflow-y-auto flex-grow space-y-4">
               <slot name="body">
-                <!-- Default body content can go here if needed -->
                 <p class="text-gray-600 dark:text-gray-300">
                   Modal body content goes here.
                 </p>

@@ -102,7 +102,7 @@ const labelClasses = computed(() => {
   // Determine position and size
   if (isPositionActive) {
     // Active state: small, top-left
-    finalClasses.push("text-xs scale-75 top-1.5");
+    finalClasses.push("text-xs scale-75 top-1.5 -translate-x-2");
   } else {
     // Default, non-active state (placeholder-like)
     finalClasses.push("top-3.5 text-base");

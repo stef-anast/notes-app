@@ -193,8 +193,6 @@ const handleOptionClickFromBase = (option: SelectOption) => {
   }
 };
 
-// Expose BaseInputDropdown methods if needed by parent components
-// For example, to programmatically open/close the dropdown
 const open = () => baseDropdownRef.value?.open();
 const close = () => baseDropdownRef.value?.close();
 const toggle = () => baseDropdownRef.value?.toggle();
