@@ -1,0 +1,104 @@
+<template>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-4">
+    <h3
+      v-if="title"
+      class="text-xl font-semibold text-gray-900 dark:text-white"
+    >
+      {{ title }}
+    </h3>
+
+    <template v-if="type === 'image'">
+      <img
+        v-if="imageUrl"
+        :src="imageUrl"
+        :alt="imageAlt"
+        class="w-full h-auto object-cover rounded-lg my-4"
+      />
+      <div
+        v-else
+        class="w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center my-4"
+      >
+        <span class="text-gray-400 dark:text-gray-500">Image placeholder</span>
+      </div>
+    </template>
+
+    <p
+      v-if="description"
+      class="text-gray-600 dark:text-gray-300 leading-relaxed"
+      :class="{ 'truncate-3-lines': type === 'image' && truncateDescription }"
+    >
+      {{ description }}
+    </p>
+
+    <template
+      v-if="type === 'checkbox' && checkboxItems && checkboxItems.length > 0"
+    >
+      <div class="space-y-3 pt-2">
+        <BaseCheckbox
+          v-for="item in checkboxItems"
+          :key="item.id"
+          :modelValue="selectedItemsSet.has(item.id)"
+          @update:modelValue="toggleCheckboxItem(item.id)"
+          :label="item.label"
+          :value="item.id"
+        />
+      </div>
+    </template>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from "vue";
+
+export interface CheckboxItem {
+  id: string | number;
+  label: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  type?: "default" | "image" | "checkbox";
+  imageUrl?: string;
+  imageAlt?: string;
+  checkboxItems?: CheckboxItem[];
+  modelValue?: (string | number)[];
+  truncateDescription?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  type: "default",
+  imageAlt: "Card image",
+  checkboxItems: () => [],
+  modelValue: () => [],
+  truncateDescription: true,
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const selectedItemsSet = computed(() => {
+  return new Set(props.modelValue);
+});
+
+const toggleCheckboxItem = (itemId: string | number) => {
+  if (props.type !== "checkbox") return;
+  const newSelectedItems = new Set(props.modelValue);
+  if (newSelectedItems.has(itemId)) {
+    newSelectedItems.delete(itemId);
+  } else {
+    newSelectedItems.add(itemId);
+  }
+  emit("update:modelValue", Array.from(newSelectedItems));
+};
+</script>
+
+<style scoped>
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
