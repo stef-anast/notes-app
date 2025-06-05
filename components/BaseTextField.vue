@@ -218,7 +218,7 @@ const handleTrailingIconClick = () => {
 };
 
 const wrapperClasses = computed(() => [
-  "relative group",
+  "relative group font-inter",
   {
     "is-filled": hasValue.value,
     "is-focused": isFocused.value,

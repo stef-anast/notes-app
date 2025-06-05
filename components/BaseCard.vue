@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-4">
+  <div
+    class="base-card-wrapper bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4 font-inter"
+  >
     <h3
       v-if="title"
       class="text-xl font-semibold text-gray-900 dark:text-white"
@@ -12,7 +14,7 @@
         v-if="imageUrl"
         :src="imageUrl"
         :alt="imageAlt"
-        class="w-full h-auto object-cover rounded-lg my-4"
+        class="w-full h-auto object-cover rounded-2xl my-4"
       />
       <div
         v-else
@@ -94,6 +96,16 @@ const toggleCheckboxItem = (itemId: string | number) => {
 </script>
 
 <style scoped>
+.base-card-wrapper {
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  cursor: pointer;
+}
+
+.base-card-wrapper:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
 .truncate-3-lines {
   display: -webkit-box;
   -webkit-line-clamp: 3;
