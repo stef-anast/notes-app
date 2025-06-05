@@ -1,8 +1,6 @@
 <template>
   <div class="default-layout">
-    <header class="page-header">
-      <div class="project-tag font-lexend">Test project</div>
-    </header>
+    <AppHeader />
     <main class="main-content">
       <section class="content-header">
         <h2 class="font-semibold font-inter">Title</h2>
@@ -30,7 +28,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-// Placeholder data for FilterDropdown
 const selectedFilters = ref([]);
 const filterOptions = ref([
   { value: "option1", label: "Option 1" },
@@ -40,6 +37,15 @@ const filterOptions = ref([
 </script>
 
 <style scoped>
+.sticky-header-container {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: #f8f8f8;
+  padding: 0 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .default-layout {
   display: flex;
   flex-direction: column;
@@ -47,24 +53,9 @@ const filterOptions = ref([
   background-color: #f8f8f8;
 }
 
-.page-header {
-  padding: 1rem 1.5rem;
-}
-
-.project-tag {
-  display: inline-block;
-  color: #0A0C11;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.75rem;
-  letter-spacing: 1px;
-  border: 2.5px solid #0A0C11;
-  font-size: 22px;
-  font-weight: 900;
-}
-
 .main-content {
   flex-grow: 1;
-  padding: 1.5rem;
+  padding: 6rem 1.5rem 1.5rem;
 }
 
 .content-header {
@@ -89,5 +80,9 @@ const filterOptions = ref([
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+}
+
+.no-underline {
+  text-decoration: none;
 }
 </style>

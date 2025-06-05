@@ -1,6 +1,9 @@
 <template>
   <div
-    class="base-card-wrapper bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4 font-inter"
+    :class="[
+      'base-card-wrapper bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4 font-inter h-full',
+      { 'is-hoverable': hoverable },
+    ]"
   >
     <h3
       v-if="title"
@@ -9,7 +12,7 @@
       {{ title }}
     </h3>
 
-    <template v-if="type === 'image'">
+    <template v-if="type === NoteType.Image">
       <img
         v-if="imageUrl"
         :src="imageUrl"
@@ -27,13 +30,17 @@
     <p
       v-if="description"
       class="text-gray-600 dark:text-gray-300 leading-relaxed"
-      :class="{ 'truncate-3-lines': type === 'image' && truncateDescription }"
+      :class="{
+        'truncate-3-lines': type === NoteType.Image && truncateDescription,
+      }"
     >
       {{ description }}
     </p>
 
     <template
-      v-if="type === 'checkbox' && checkboxItems && checkboxItems.length > 0"
+      v-if="
+        type === NoteType.Checkbox && checkboxItems && checkboxItems.length > 0
+      "
     >
       <div class="space-y-3 pt-2">
         <BaseCheckbox
@@ -51,6 +58,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { NoteType } from "~/composables/useNotes";
 
 export interface CheckboxItem {
   id: string | number;
@@ -61,20 +69,22 @@ export interface CheckboxItem {
 interface Props {
   title: string;
   description?: string;
-  type?: "default" | "image" | "checkbox";
+  type?: NoteType;
   imageUrl?: string;
   imageAlt?: string;
   checkboxItems?: CheckboxItem[];
   modelValue?: (string | number)[];
   truncateDescription?: boolean;
+  hoverable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  type: "default",
+  type: NoteType.Default,
   imageAlt: "Card image",
   checkboxItems: () => [],
   modelValue: () => [],
   truncateDescription: true,
+  hoverable: true,
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -84,7 +94,7 @@ const selectedItemsSet = computed(() => {
 });
 
 const toggleCheckboxItem = (itemId: string | number) => {
-  if (props.type !== "checkbox") return;
+  if (props.type !== NoteType.Checkbox) return;
   const newSelectedItems = new Set(props.modelValue);
   if (newSelectedItems.has(itemId)) {
     newSelectedItems.delete(itemId);
@@ -99,10 +109,13 @@ const toggleCheckboxItem = (itemId: string | number) => {
 .base-card-wrapper {
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
+}
+
+.is-hoverable {
   cursor: pointer;
 }
 
-.base-card-wrapper:hover {
+.is-hoverable:hover {
   transform: translateY(-2px) scale(1.01);
 }
 

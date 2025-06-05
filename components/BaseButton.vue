@@ -30,6 +30,7 @@ import { computed, defineAsyncComponent } from "vue";
 
 const IconPlus = defineAsyncComponent(() => import("./icons/IconPlus.vue"));
 const IconClose = defineAsyncComponent(() => import("./icons/IconClose.vue"));
+const IconBack = defineAsyncComponent(() => import("./icons/IconBack.vue"));
 
 interface Props {
   text?: string;
@@ -58,6 +59,9 @@ const iconComponent = computed(() => {
   }
   if (props.iconName === "plus") {
     return IconPlus;
+  }
+  if (props.iconName === "back") {
+    return IconBack;
   }
 
   return null;
