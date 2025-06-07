@@ -81,8 +81,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import type { Note } from "~/composables/useNotes";
-import { NoteType } from "~/composables/useNotes";
+import type { Note } from "~/store/notes";
+import { NoteType } from "~/store/notes";
 
 const props = defineProps<{
   title: string;
@@ -90,9 +90,7 @@ const props = defineProps<{
 }>();
 
 const isModalOpen = ref(false);
-const selectedType = ref<NoteType | "">(
-  props.initialNote?.type ?? ""
-);
+const selectedType = ref<NoteType | "">(props.initialNote?.type ?? "");
 const noteTitle = ref(props.initialNote?.title ?? "");
 const noteDescription = ref(props.initialNote?.description ?? "");
 const imageFile = ref<File | null>(null);

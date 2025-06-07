@@ -23,7 +23,7 @@
             :modelValue="selectedFilters"
             :options="filterOptions"
             @update:modelValue="selectedFilters = $event"
-            :disabled="notes.length === 0"
+            :disabled="notesStore.notes.length === 0"
           />
           <BaseButton
             class="add-new-button"
@@ -35,7 +35,9 @@
         </div>
       </section>
       <section
-        :class="notes.length > 0 ? 'card-grid' : 'flex-grow flex flex-col'"
+        :class="
+          notesStore.notes.length > 0 ? 'card-grid' : 'flex-grow flex flex-col'
+        "
       >
         <slot />
       </section>
@@ -47,10 +49,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
-import { useNotes } from "~/composables/useNotes";
+import { useNotesStore } from "~/store/notes";
 import IconClose from "~/components/icons/IconClose.vue";
 
-const { notes } = useNotes();
+const notesStore = useNotesStore();
 const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
 
 const openCreateNoteModal = () => {

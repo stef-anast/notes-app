@@ -17,10 +17,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { Note } from "~/composables/useNotes";
-import { useNotes } from "~/composables/useNotes";
+import type { Note } from "~/store/notes";
+import { useNotesStore } from "~/store/notes";
 
-const { addNote } = useNotes();
+const notesStore = useNotesStore();
 const baseNoteForm = ref();
 
 const openModal = () => {
@@ -28,7 +28,7 @@ const openModal = () => {
 };
 
 const handleCreate = (formData: Omit<Note, "id">) => {
-  addNote(formData);
+  notesStore.addNote(formData);
   baseNoteForm.value?.closeModal();
 };
 

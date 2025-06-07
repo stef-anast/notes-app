@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useNotes, type Note } from "~/composables/useNotes";
+import { useNotesStore, type Note } from "~/store/notes";
 import EditNoteModal from "~/components/EditNoteModal.vue";
 import { ref } from "vue";
 
@@ -48,11 +48,11 @@ definePageMeta({
 });
 
 const route = useRoute();
-const { findNote } = useNotes();
+const notesStore = useNotesStore();
 const noteIdParam = route.params.id;
 const noteId = Array.isArray(noteIdParam) ? noteIdParam[0] : noteIdParam;
 
-const note = ref<Note | undefined>(findNote(noteId));
+const note = ref<Note | undefined>(notesStore.findNote(noteId));
 const editNoteModal = ref();
 
 if (!note.value) {
@@ -84,8 +84,7 @@ const onCheckboxChange = (newSelectedItems: (string | number)[]) => {
   if (note.value) {
     const updatedNote = { ...note.value, selectedItems: newSelectedItems };
     note.value = updatedNote;
-    const { updateNote } = useNotes();
-    updateNote(updatedNote);
+    notesStore.updateNote(updatedNote);
   }
 };
 </script>

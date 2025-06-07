@@ -1,7 +1,7 @@
 <template>
-  <template v-if="notes.length > 0">
+  <template v-if="notesStore.notes.length > 0">
     <NuxtLink
-      v-for="note in notes"
+      v-for="note in notesStore.notes"
       :key="note.id"
       :to="`/note/${note.id}`"
       class="no-underline"
@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import { useNotes } from "~/composables/useNotes";
+import { useNotesStore } from "~/store/notes";
 
-const { notes, updateNote } = useNotes();
+const notesStore = useNotesStore();
 
 useHead({
   title: "Test project",
@@ -47,10 +47,10 @@ const onCheckboxChange = (
   noteId: string | number,
   newSelectedItems: (string | number)[]
 ) => {
-  const noteToUpdate = notes.value.find((n) => n.id === noteId);
+  const noteToUpdate = notesStore.notes.find((n) => n.id === noteId);
   if (noteToUpdate) {
     const updatedNote = { ...noteToUpdate, selectedItems: newSelectedItems };
-    updateNote(updatedNote);
+    notesStore.updateNote(updatedNote);
   }
 };
 </script>

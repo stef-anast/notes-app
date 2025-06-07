@@ -87,8 +87,6 @@
 
 <script setup lang="ts">
 import {
-  defineProps,
-  defineEmits,
   computed,
   watch,
   useSlots,
