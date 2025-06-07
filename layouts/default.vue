@@ -5,6 +5,20 @@
       <section class="content-header">
         <h2 class="font-semibold font-inter">Title</h2>
         <div class="actions">
+          <div v-if="selectedFilters.length" class="flex items-center">
+            <div
+              v-for="filter in sortedSelectedFilters"
+              :key="filter"
+              class="flex items-center gap-x-1.5 text-gray-800 font-semibold px-3"
+            >
+              {{ getFilterLabel(filter) }}
+              <button @click="removeFilter(filter)" class="focus:outline-none">
+                <IconClose
+                  class="w-5 h-5 pt-0.25 text-gray-600 cursor-pointer hover:text-gray-800"
+                />
+              </button>
+            </div>
+          </div>
           <FilterDropdown
             :modelValue="selectedFilters"
             :options="filterOptions"
@@ -31,9 +45,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
 import { useNotes } from "~/composables/useNotes";
+import IconClose from "~/components/icons/IconClose.vue";
 
 const { notes } = useNotes();
 const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
@@ -42,12 +57,27 @@ const openCreateNoteModal = () => {
   createNoteModal.value?.openModal();
 };
 
-const selectedFilters = ref([]);
+const selectedFilters = ref<(string | number)[]>([]);
 const filterOptions = ref([
-  { value: "option1", label: "Option 1" },
-  { value: "option2", label: "Option 2" },
-  { value: "option3", label: "Option 3" },
+  { value: "type1", label: "Type 1" },
+  { value: "type2", label: "Type 2" },
+  { value: "type3", label: "Type 3" },
 ]);
+
+const getFilterLabel = (value: string | number) => {
+  const option = filterOptions.value.find((opt) => opt.value === value);
+  return option ? option.label : "";
+};
+
+const removeFilter = (filterToRemove: string | number) => {
+  selectedFilters.value = selectedFilters.value.filter(
+    (filter) => filter !== filterToRemove
+  );
+};
+
+const sortedSelectedFilters = computed(() => {
+  return [...selectedFilters.value].sort();
+});
 </script>
 
 <style scoped>
@@ -96,9 +126,5 @@ const filterOptions = ref([
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-}
-
-.no-underline {
-  text-decoration: none;
 }
 </style>
