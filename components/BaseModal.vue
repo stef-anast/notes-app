@@ -34,8 +34,7 @@
             <div
               class="flex items-center justify-between p-5 flex-shrink-0"
               :class="{
-                'border-b border-gray-200':
-                  !props.hideHeaderBorder,
+                'border-b border-gray-200': !props.hideHeaderBorder,
               }"
             >
               <h3
@@ -61,9 +60,7 @@
             <!-- Body -->
             <div class="pt-1 px-5 overflow-y-auto flex-grow space-y-4">
               <slot name="body">
-                <p class="text-gray-600">
-                  Modal body content goes here.
-                </p>
+                <p class="text-gray-600">Modal body content goes here.</p>
               </slot>
             </div>
 
@@ -72,8 +69,7 @@
               v-if="hasFooterSlot"
               class="flex items-center justify-end p-5 flex-shrink-0 space-x-3"
               :class="{
-                'border-t border-gray-200':
-                  !props.hideFooterBorder,
+                'border-t border-gray-200': !props.hideFooterBorder,
               }"
             >
               <slot name="footer"></slot>
@@ -86,12 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  watch,
-  useSlots,
-  useId,
-} from "vue";
+import { computed, watch, useSlots, useId } from "vue";
 
 interface Props {
   modelValue: boolean;

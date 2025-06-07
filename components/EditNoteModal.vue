@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
-import type { Note } from "~/store/notes";
+import type { Note } from "~/types";
 import { useNotesStore } from "~/store/notes";
 import ConfirmationModal from "./ConfirmationModal.vue";
 

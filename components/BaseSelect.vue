@@ -77,23 +77,19 @@
               isSelected(option) && !option.disabled
                 ? 'bg-blue-600 border-blue-600'
                 : 'bg-white border-gray-400',
-              option.disabled
-                ? 'border-gray-300 bg-gray-100'
-                : '',
+              option.disabled ? 'border-gray-300 bg-gray-100' : '',
             ]"
             aria-hidden="true"
           >
-            <IconCheck
+            <component
               v-if="isSelected(option) && !option.disabled"
+              :is="getIconComponent('check')"
               class="w-4 h-4 text-white"
             />
           </span>
         </template>
         <span
-          :class="[
-            'block truncate',
-            option.disabled ? 'text-gray-400' : '',
-          ]"
+          :class="['block truncate', option.disabled ? 'text-gray-400' : '']"
         >
           {{ option.label }}
         </span>
@@ -103,14 +99,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent } from "vue";
-import BaseInputDropdown, {
-  type DropdownOption,
-} from "./BaseInputDropdown.vue";
+import { ref, computed } from "vue";
+import BaseInputDropdown from "./BaseInputDropdown.vue";
+import { useIcons } from "~/composables/useIcons";
+import type { DropdownOption } from "~/types";
 
 export type SelectOption = DropdownOption;
 
-const IconCheck = defineAsyncComponent(() => import("./icons/IconCheck.vue"));
+const { getIconComponent } = useIcons();
 
 interface Props {
   modelValue: string | number | boolean | null | undefined | any[];

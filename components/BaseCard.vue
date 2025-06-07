@@ -55,13 +55,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { NoteType } from "~/store/notes";
-
-export interface CheckboxItem {
-  id: string | number;
-  label: string;
-  disabled?: boolean;
-}
+import { NoteType } from "~/types";
+import type { CheckboxItem } from "~/types";
 
 interface Props {
   title: string;

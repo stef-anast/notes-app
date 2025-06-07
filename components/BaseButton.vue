@@ -3,6 +3,9 @@
     :class="buttonClasses"
     @click="$emit('click', $event)"
     :disabled="props.disabled"
+    :aria-haspopup="props.ariaHaspopup"
+    :aria-expanded="props.ariaExpanded"
+    :aria-label="props.ariaLabel"
   >
     <template v-if="props.size === 'icon'">
       <component
@@ -17,7 +20,7 @@
         :is="iconComponent"
         :class="iconClasses"
       />
-      <span v-if="text">{{ text }}</span>
+      <span v-if="text" :class="textClasses">{{ text }}</span>
       <component
         v-if="
           props.icon && props.iconPosition === 'right' && text && iconComponent
@@ -30,29 +33,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from "vue";
-import type { Component } from "vue";
+import { computed } from "vue";
+import { useIcons } from "~/composables/useIcons";
+import type { IconName, ButtonVariant, ButtonColor, ButtonSize } from "~/types";
 
-const iconMap: { [key: string]: Component } = {
-  plus: defineAsyncComponent(() => import("./icons/IconPlus.vue")),
-  close: defineAsyncComponent(() => import("./icons/IconClose.vue")),
-  back: defineAsyncComponent(() => import("./icons/IconBack.vue")),
-  note: defineAsyncComponent(() => import("./icons/IconNote.vue")),
-  minus: defineAsyncComponent(() => import("./icons/IconMinus.vue")),
-  edit: defineAsyncComponent(() => import("./icons/IconEdit.vue")),
-  trash: defineAsyncComponent(() => import("./icons/IconTrash.vue")),
-  save: defineAsyncComponent(() => import("./icons/IconSave.vue")),
-};
+const { getIconComponent } = useIcons();
 
 interface Props {
   text?: string;
-  variant?: "solid" | "outline" | "ghost" | "light";
-  color?: "primary" | "secondary" | "danger" | "success" | "dark";
-  size?: "small" | "medium" | "large" | "icon";
+  variant?: ButtonVariant;
+  color?: ButtonColor;
+  size?: ButtonSize;
   icon?: boolean;
   iconPosition?: "left" | "right";
-  iconName?: string;
+  iconName?: IconName;
   disabled?: boolean;
+  ariaHaspopup?: "menu" | "listbox" | "tree" | "grid" | "dialog" | boolean;
+  ariaExpanded?: boolean;
+  ariaLabel?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -68,19 +66,16 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["click"]);
 
 const iconComponent = computed(() => {
-  return iconMap[props.iconName] ?? null;
+  return getIconComponent(props.iconName);
 });
 
-const sizeClasses: Record<"small" | "medium" | "large", string> = {
+const sizeClasses: Record<Exclude<ButtonSize, "icon">, string> = {
   small: "px-4 py-1.5 text-sm",
   medium: "px-5 py-2 text-base",
   large: "px-6 py-3 text-base",
 };
 
-const colorClasses: Record<
-  "solid" | "outline" | "ghost" | "light",
-  Record<"primary" | "secondary" | "danger" | "success" | "dark", string>
-> = {
+const colorClasses: Record<ButtonVariant, Record<ButtonColor, string>> = {
   solid: {
     primary:
       "bg-blue-500 text-white hover:bg-blue-600 focus-visible:ring-blue-600",
@@ -90,6 +85,7 @@ const colorClasses: Record<
     success:
       "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-500",
     dark: "bg-gray-800 text-white hover:bg-gray-900 focus-visible:ring-gray-800",
+    black: "bg-black text-white hover:bg-gray-800 focus-visible:ring-gray-600",
   },
   outline: {
     primary:
@@ -101,6 +97,8 @@ const colorClasses: Record<
     success:
       "bg-transparent text-green-600 border border-green-600 hover:bg-green-50 focus-visible:ring-green-600",
     dark: "bg-transparent text-gray-800 border border-gray-800 hover:bg-gray-100 focus-visible:ring-gray-800",
+    black:
+      "bg-transparent text-black border border-black hover:bg-gray-50 focus-visible:ring-gray-600",
   },
   light: {
     primary:
@@ -112,17 +110,16 @@ const colorClasses: Record<
     success:
       "bg-green-100 text-green-600 hover:bg-green-200 focus-visible:ring-green-600",
     dark: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus-visible:ring-gray-800",
+    black:
+      "bg-gray-100 text-black hover:bg-gray-200 focus-visible:ring-gray-600",
   },
   ghost: {
-    primary:
-      "text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600",
-    secondary:
-      "text-gray-600 hover:bg-gray-100 focus-visible:ring-gray-500",
-    danger:
-      "text-red-600 hover:bg-red-50 focus-visible:ring-red-500",
-    success:
-      "text-green-600 hover:bg-green-50 focus-visible:ring-green-600",
+    primary: "text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600",
+    secondary: "text-gray-600 hover:bg-gray-100 focus-visible:ring-gray-500",
+    danger: "text-red-600 hover:bg-red-50 focus-visible:ring-red-500",
+    success: "text-green-600 hover:bg-green-50 focus-visible:ring-green-600",
     dark: "text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-800",
+    black: "text-black hover:bg-gray-100 focus-visible:ring-gray-600",
   },
 };
 
@@ -139,7 +136,15 @@ const buttonClasses = computed(() => {
   }
 
   if (props.disabled) {
-    classes.push("bg-gray-400 text-white");
+    // Apply base disabled styling
+    classes.push("text-white");
+
+    // Apply variant-specific background colors for disabled state
+    if (props.color === "black") {
+      classes.push("bg-gray-700");
+    } else {
+      classes.push("bg-gray-400");
+    }
   } else {
     if (props.variant === "ghost") {
       classes.push(
@@ -150,6 +155,17 @@ const buttonClasses = computed(() => {
     if (colorSpecificClasses) {
       classes.push(colorSpecificClasses);
     }
+  }
+
+  return classes.join(" ");
+});
+
+const textClasses = computed(() => {
+  const classes = [];
+
+  // Add margin-right when icon is on the right side
+  if (props.icon && props.iconPosition === "right") {
+    classes.push("mr-1");
   }
 
   return classes.join(" ");

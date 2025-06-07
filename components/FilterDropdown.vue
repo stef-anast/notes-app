@@ -1,118 +1,52 @@
 <template>
-  <div class="relative font-inter" ref="dropdownWrapperRef">
-    <button
-      @click="toggleDropdown"
-      type="button"
-      :class="[
-        'inline-flex items-center justify-center pl-5 pr-4 py-2 rounded-full shadow-sm text-base font-medium',
-        props.disabled
-          ? 'bg-gray-700 text-white cursor-not-allowed'
-          : 'bg-black text-white hover:bg-gray-800 cursor-pointer',
-      ]"
-      aria-haspopup="listbox"
-      :aria-expanded="isOpen"
+  <div
+    class="relative font-inter"
+    ref="dropdownWrapperRef"
+    @keydown="handleKeydown"
+  >
+    <BaseButton
+      text="Filter"
+      :icon="true"
+      icon-name="filter-bars"
+      icon-position="right"
+      variant="solid"
+      color="black"
+      size="medium"
       :disabled="props.disabled"
-    >
-      Filter
-      <IconFilterBars class="w-4 h-4 ml-1.5" />
-    </button>
-    <transition
-      leave-active-class="transition ease-in duration-100"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="isOpen"
-        ref="optionsListRef"
-        class="absolute z-10 mt-2 w-32 origin-top-right rounded-xl bg-white shadow-lg focus:outline-none"
-        role="listbox"
-        tabindex="-1"
-      >
-        <slot name="options-header"></slot>
-        <ul>
-          <!-- All Option -->
-          <li
-            v-if="props.options && props.options.length > 0"
-            @click.stop="handleSelectAllClick"
-            :class="[
-              'relative rounded-t-xl select-none py-2.5 px-4 text-sm text-gray-900 flex items-center gap-x-3 mb-0.5',
-              (isAllSelected || isIndeterminate) && !props.disabled
-                ? 'bg-blue-100'
-                : '',
-              props.disabled
-                ? 'opacity-50 cursor-not-allowed'
-                : 'cursor-pointer hover:bg-blue-50',
-            ]"
-            role="option"
-            aria-label="Select all options"
-          >
-            <input
-              type="checkbox"
-              :checked="isAllSelected"
-              :indeterminate="isIndeterminate"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              tabindex="-1"
-            />
-            <span class="block">All</span>
-          </li>
+      :aria-haspopup="'listbox'"
+      :aria-expanded="dropdown.isOpen.value"
+      @click="toggleDropdown"
+    />
 
-          <li
-            v-for="(option, index) in props.options"
-            :key="option.value?.toString() ?? index + '-fallback'"
-            @click.stop="handleOptionClick(option)"
-            :class="[
-              'relative select-none py-2.5 px-4 text-sm text-gray-900 flex items-center gap-x-3',
-              isSelected(option) && !option.disabled ? 'bg-blue-100' : '',
-              option.disabled
-                ? 'opacity-50 cursor-not-allowed'
-                : 'cursor-pointer hover:bg-blue-50',
-              index === props.options.length - 1 ? 'rounded-b-xl' : 'mb-0.5',
-            ]"
-            role="option"
-            :aria-selected="isSelected(option)"
-            :aria-disabled="option.disabled"
-          >
-            <input
-              type="checkbox"
-              :checked="isSelected(option)"
-              :disabled="option.disabled"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              tabindex="-1"
-              @click.stop
-              @change="() => handleOptionClick(option)"
-            />
-            <span class="block">{{ option.label }}</span>
-          </li>
-          <li
-            v-if="!props.options || props.options.length === 0"
-            class="relative cursor-default select-none py-2.5 px-4 text-sm text-gray-500 mb-0.5"
-            role="option"
-          >
-            No options available
-          </li>
-        </ul>
+    <DropdownOptionsList
+      ref="optionsListRef"
+      :is-open="dropdown.isOpen.value"
+      :options="props.options"
+      :model-value="props.modelValue"
+      :show-checkboxes="true"
+      :show-select-all="true"
+      :custom-options-class="'absolute z-10 mt-2 w-32 origin-top-right rounded-xl bg-white shadow-lg focus:outline-none'"
+      @option-click="handleOptionClick"
+      @select-all-click="handleSelectAllClick"
+    >
+      <template #options-header>
+        <slot name="options-header"></slot>
+      </template>
+      <template #options-footer>
         <slot name="options-footer"></slot>
-      </div>
-    </transition>
+      </template>
+    </DropdownOptionsList>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  defineAsyncComponent,
-  computed,
-} from "vue";
-import IconFilterBars from "./icons/IconFilterBars.vue";
+import { ref, watch } from "vue";
+import { useDropdown } from "~/composables/useDropdown";
+import type { FilterDropdownOption } from "~/types";
+import DropdownOptionsList from "./dropdown/DropdownOptionsList.vue";
+import BaseButton from "./BaseButton.vue";
 
-export interface FilterDropdownOption {
-  value: string | number | boolean | null | undefined;
-  label: string;
-  disabled?: boolean;
-  [key: string]: any;
-}
+export type { FilterDropdownOption };
 
 interface Props {
   modelValue: (string | number | boolean | null | undefined)[];
@@ -126,47 +60,59 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnSelect: false,
 });
 
-const emit = defineEmits(["update:modelValue", "change"]);
+const emit = defineEmits([
+  "update:modelValue",
+  "change",
+  "dropdown-state-change",
+  "option-click",
+  "focus",
+  "blur",
+]);
 
-const dropdownWrapperRef = ref<HTMLElement | null>(null);
-const optionsListRef = ref<HTMLElement | null>(null);
-const isOpen = ref(false);
+const optionsListRef = ref<InstanceType<typeof DropdownOptionsList> | null>(
+  null
+);
+
+const dropdown = useDropdown(
+  {
+    options: props.options,
+    modelValue: props.modelValue,
+    multiple: true,
+    closeOnSelect: props.closeOnSelect,
+    searchable: false,
+    searchText: "",
+    disabled: props.disabled,
+  },
+  emit
+);
+
+const { dropdownWrapperRef } = dropdown;
+
+watch(
+  () => props.disabled,
+  (newDisabled, oldDisabled) => {
+    if (oldDisabled && !newDisabled) {
+      // Force close dropdown when component becomes enabled to ensure clean state
+      dropdown.closeDropdown();
+    }
+  }
+);
 
 const toggleDropdown = () => {
   if (props.disabled) return;
-  isOpen.value = !isOpen.value;
+  dropdown.toggleDropdown();
 };
 
-const closeDropdown = () => {
-  isOpen.value = false;
-};
-
-const isSelected = (option: FilterDropdownOption): boolean => {
-  return props.modelValue.includes(option.value);
-};
-
-const ToggableOptions = computed(() => {
-  return props.options.filter((opt) => !opt.disabled);
-});
-
-const isAllSelected = computed(() => {
-  if (!ToggableOptions.value.length) return false;
-  return ToggableOptions.value.every((opt) =>
-    props.modelValue.includes(opt.value)
-  );
-});
-
-const isIndeterminate = computed(() => {
-  if (!ToggableOptions.value.length) return false;
-  const selectedCount = ToggableOptions.value.filter((opt) =>
-    props.modelValue.includes(opt.value)
-  ).length;
-  return selectedCount > 0 && selectedCount < ToggableOptions.value.length;
-});
-
-const handleSelectAllClick = () => {
+const handleSelectAllClick = ({
+  isAllSelected,
+  toggleableOptions,
+}: {
+  isAllSelected: boolean;
+  toggleableOptions: FilterDropdownOption[];
+}) => {
   let newValue: (string | number | boolean | null | undefined)[] = [];
-  if (isAllSelected.value) {
+
+  if (isAllSelected) {
     // If all are selected, deselect all
     newValue = props.modelValue.filter((val) => {
       const option = props.options.find((o) => o.value === val);
@@ -174,7 +120,7 @@ const handleSelectAllClick = () => {
     });
   } else {
     // Otherwise, select all toggleable options
-    newValue = ToggableOptions.value.map((opt) => opt.value);
+    newValue = toggleableOptions.map((opt) => opt.value);
     // Add any pre-selected disabled options
     props.options.forEach((opt) => {
       if (
@@ -186,6 +132,7 @@ const handleSelectAllClick = () => {
       }
     });
   }
+
   emit("update:modelValue", newValue);
   emit("change", newValue);
 };
@@ -201,39 +148,24 @@ const handleOptionClick = (option: FilterDropdownOption) => {
   } else {
     newValue.push(option.value); // Select
   }
+
   emit("update:modelValue", newValue);
   emit("change", newValue);
 
-  if (props.closeOnSelect && !isOpen.value) {
+  if (props.closeOnSelect && !dropdown.isOpen.value) {
     // Check isOpen state before closing, useful if we want to keep it open for multiple selections
-    closeDropdown();
+    dropdown.closeDropdown();
   }
 };
 
-const handleClickOutside = (event: MouseEvent) => {
-  if (
-    dropdownWrapperRef.value &&
-    !dropdownWrapperRef.value.contains(event.target as Node)
-  ) {
-    if (isOpen.value) {
-      closeDropdown();
-    }
-  }
+const handleKeydown = (event: KeyboardEvent) => {
+  if (props.disabled) return;
+  dropdown.handleKeydown(event);
 };
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside, true);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside, true);
-});
 
 defineExpose({
-  open: () => {
-    if (!props.disabled) isOpen.value = true;
-  },
-  close: closeDropdown,
+  open: dropdown.openDropdown,
+  close: dropdown.closeDropdown,
   toggle: toggleDropdown,
 });
 </script>
