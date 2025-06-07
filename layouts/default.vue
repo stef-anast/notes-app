@@ -15,6 +15,7 @@
             text="Add New"
             :icon="true"
             iconPosition="left"
+            @click="openCreateNoteModal"
           />
         </div>
       </section>
@@ -22,11 +23,19 @@
         <slot />
       </section>
     </main>
+    <CreateNoteModal ref="createNoteModal" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import CreateNoteModal from "~/components/CreateNoteModal.vue";
+
+const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
+
+const openCreateNoteModal = () => {
+  createNoteModal.value?.openModal();
+};
 
 const selectedFilters = ref([]);
 const filterOptions = ref([

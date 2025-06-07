@@ -1,5 +1,9 @@
 <template>
-  <button :class="buttonClasses" @click="$emit('click', $event)">
+  <button
+    :class="buttonClasses"
+    @click="$emit('click', $event)"
+    :disabled="props.disabled"
+  >
     <template v-if="props.size === 'icon'">
       <component
         v-if="iconComponent"
@@ -27,19 +31,28 @@
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from "vue";
+import type { Component } from "vue";
 
-const IconPlus = defineAsyncComponent(() => import("./icons/IconPlus.vue"));
-const IconClose = defineAsyncComponent(() => import("./icons/IconClose.vue"));
-const IconBack = defineAsyncComponent(() => import("./icons/IconBack.vue"));
+const iconMap: { [key: string]: Component } = {
+  plus: defineAsyncComponent(() => import("./icons/IconPlus.vue")),
+  close: defineAsyncComponent(() => import("./icons/IconClose.vue")),
+  back: defineAsyncComponent(() => import("./icons/IconBack.vue")),
+  note: defineAsyncComponent(() => import("./icons/IconNote.vue")),
+  minus: defineAsyncComponent(() => import("./icons/IconMinus.vue")),
+  edit: defineAsyncComponent(() => import("./icons/IconEdit.vue")),
+  trash: defineAsyncComponent(() => import("./icons/IconTrash.vue")),
+  save: defineAsyncComponent(() => import("./icons/IconSave.vue")),
+};
 
 interface Props {
   text?: string;
-  variant?: "solid" | "outline" | "ghost";
-  color?: "primary" | "secondary" | "danger" | "success";
+  variant?: "solid" | "outline" | "ghost" | "light";
+  color?: "primary" | "secondary" | "danger" | "success" | "dark";
   size?: "small" | "medium" | "large" | "icon";
   icon?: boolean;
   iconPosition?: "left" | "right";
   iconName?: string;
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,114 +62,94 @@ const props = withDefaults(defineProps<Props>(), {
   icon: false,
   iconPosition: "left",
   iconName: "plus",
+  disabled: false,
 });
 
 const emit = defineEmits(["click"]);
 
 const iconComponent = computed(() => {
-  if (props.iconName === "close") {
-    return IconClose;
-  }
-  if (props.iconName === "plus") {
-    return IconPlus;
-  }
-  if (props.iconName === "back") {
-    return IconBack;
-  }
-
-  return null;
+  return iconMap[props.iconName] ?? null;
 });
 
+const sizeClasses: Record<"small" | "medium" | "large", string> = {
+  small: "px-4 py-1.5 text-sm",
+  medium: "px-5 py-2 text-base",
+  large: "px-6 py-3 text-base",
+};
+
+const colorClasses: Record<
+  "solid" | "outline" | "ghost" | "light",
+  Record<"primary" | "secondary" | "danger" | "success" | "dark", string>
+> = {
+  solid: {
+    primary:
+      "bg-blue-500 text-white hover:bg-blue-600 focus-visible:ring-blue-600",
+    secondary:
+      "bg-gray-500 text-white hover:bg-gray-600 focus-visible:ring-gray-500",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+    success:
+      "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-500",
+    dark: "bg-gray-800 text-white hover:bg-gray-900 focus-visible:ring-gray-800",
+  },
+  outline: {
+    primary:
+      "bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600",
+    secondary:
+      "bg-transparent text-gray-700 border border-gray-400 hover:bg-gray-50 focus-visible:ring-gray-400",
+    danger:
+      "bg-transparent text-red-600 border border-red-600 hover:bg-red-50 focus-visible:ring-red-500",
+    success:
+      "bg-transparent text-green-600 border border-green-600 hover:bg-green-50 focus-visible:ring-green-600",
+    dark: "bg-transparent text-gray-800 border border-gray-800 hover:bg-gray-100 focus-visible:ring-gray-800",
+  },
+  light: {
+    primary:
+      "bg-blue-100 text-blue-600 hover:bg-blue-200 focus-visible:ring-blue-600",
+    secondary:
+      "bg-gray-100 text-gray-700 hover:bg-gray-200 focus-visible:ring-gray-500",
+    danger:
+      "bg-red-100 text-red-600 hover:bg-red-200 focus-visible:ring-red-500",
+    success:
+      "bg-green-100 text-green-600 hover:bg-green-200 focus-visible:ring-green-600",
+    dark: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus-visible:ring-gray-800",
+  },
+  ghost: {
+    primary:
+      "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus-visible:ring-blue-600",
+    secondary:
+      "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 focus-visible:ring-gray-500",
+    danger:
+      "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible:ring-red-500",
+    success:
+      "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 focus-visible:ring-green-600",
+    dark: "text-gray-800 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700/50 focus-visible:ring-gray-800",
+  },
+};
+
 const baseClasses =
-  "font-inter rounded-full font-medium inline-flex items-center justify-center gap-x-2 transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer";
+  "font-inter rounded-full font-medium inline-flex items-center justify-center gap-x-1 transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer";
 
 const buttonClasses = computed(() => {
   const classes = [baseClasses];
 
-  // Size classes
   if (props.size === "icon") {
     classes.push("w-10 h-10 p-0");
   } else {
-    switch (props.size) {
-      case "small":
-        classes.push("px-4 py-1.5 text-sm");
-        break;
-      case "large":
-        classes.push("px-6 py-3 text-base");
-        break;
-      case "medium":
-      default:
-        classes.push("px-5 py-2 text-base");
-        break;
-    }
+    classes.push(sizeClasses[props.size]);
   }
 
-  // Variant and Color classes
-  let colorSpecificClasses = "";
-  if (props.variant === "solid") {
-    switch (props.color) {
-      case "primary":
-        colorSpecificClasses =
-          "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-600";
-        break;
-      case "secondary":
-        colorSpecificClasses =
-          "bg-gray-500 text-white hover:bg-gray-600 focus-visible:ring-gray-500";
-        break;
-      case "danger":
-        colorSpecificClasses =
-          "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500";
-        break;
-      case "success":
-        colorSpecificClasses =
-          "bg-green-500 text-white hover:bg-green-600 focus-visible:ring-green-500";
-        break;
+  if (props.disabled) {
+    classes.push("bg-gray-400 text-white");
+  } else {
+    if (props.variant === "ghost") {
+      classes.push(
+        "bg-transparent border-transparent focus-visible:ring-offset-0"
+      );
     }
-  } else if (props.variant === "outline") {
-    switch (props.color) {
-      case "primary":
-        colorSpecificClasses =
-          "bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600";
-        break;
-      case "secondary":
-        colorSpecificClasses =
-          "bg-transparent text-gray-700 border border-gray-400 hover:bg-gray-50 focus-visible:ring-gray-400";
-        break;
-      case "danger":
-        colorSpecificClasses =
-          "bg-transparent text-red-600 border border-red-600 hover:bg-red-50 focus-visible:ring-red-500";
-        break;
-      case "success":
-        colorSpecificClasses =
-          "bg-transparent text-green-600 border border-green-600 hover:bg-green-50 focus-visible:ring-green-600";
-        break;
+    const colorSpecificClasses = colorClasses[props.variant]?.[props.color];
+    if (colorSpecificClasses) {
+      classes.push(colorSpecificClasses);
     }
-  } else if (props.variant === "ghost") {
-    classes.push(
-      "bg-transparent border-transparent focus-visible:ring-offset-0"
-    ); // Common for all ghost
-    switch (props.color) {
-      case "primary":
-        colorSpecificClasses =
-          "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus-visible:ring-blue-600";
-        break;
-      case "secondary":
-        colorSpecificClasses =
-          "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 focus-visible:ring-gray-500";
-        break;
-      case "danger":
-        colorSpecificClasses =
-          "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible:ring-red-500";
-        break;
-      case "success":
-        colorSpecificClasses =
-          "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 focus-visible:ring-green-600";
-        break;
-    }
-  }
-
-  if (colorSpecificClasses) {
-    classes.push(colorSpecificClasses);
   }
 
   return classes.join(" ");
@@ -173,7 +166,6 @@ const iconClasses = computed(() => {
 
 <style scoped>
 button:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
 </style>

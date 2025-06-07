@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" ref="dropdownWrapperRef">
+  <div class="relative font-inter" ref="dropdownWrapperRef">
     <label
       v-if="props.label"
       :for="
@@ -15,6 +15,10 @@
     <div
       :id="componentId + '-trigger-container'"
       ref="triggerContainerRef"
+      style="
+        transition: border-color 0.2s ease-in-out,
+          background-color 0.2s ease-in-out;
+      "
       @click="handleTriggerContainerClick"
       :tabindex="
         props.disabled || (props.searchable && props.showSearchInTrigger)
@@ -58,7 +62,7 @@
           :input-placeholder-text="internalSearchInputPlaceholder"
           :focus-input="focusInput"
           :toggle-dropdown="toggleDropdown"
-          :is-label-active="isLabelActive.value"
+          :is-label-active="isLabelActive"
         ></slot>
 
         <input
@@ -73,7 +77,7 @@
           @keydown="handleDropdownKeydown"
           :disabled="props.disabled"
           :placeholder="internalSearchInputPlaceholder"
-          class="flex-grow min-w-[60px] bg-transparent border-none outline-none p-0 m-0 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 leading-normal"
+          class="flex-grow min-w-[60px] bg-transparent border-none outline-none p-0 m-0 text-sm text-gray-900 placeholder-gray-500 leading-normal"
           style="box-shadow: none"
           :aria-label="props.label || props.placeholder"
           autocomplete="off"
@@ -84,7 +88,7 @@
           name="trigger"
           :is-open="isOpen"
           :has-selection="hasValue"
-          :is-label-active="isLabelActive.value"
+          :is-label-active="isLabelActive"
         ></slot>
       </div>
 
@@ -96,7 +100,7 @@
       >
         <component
           :is="isOpen ? IconChevronUp : IconChevronDown"
-          class="w-5 h-5 text-gray-400 dark:text-gray-500"
+          class="w-5 h-5 text-gray-700"
         />
       </span>
     </div>
@@ -118,7 +122,7 @@
         v-if="isOpen"
         :id="componentId + '-options'"
         ref="optionsListRef"
-        class="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-lg max-h-60 overflow-auto focus:outline-none text-base py-0.5"
+        class="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto focus:outline-none text-base py-0.5"
         tabindex="-1"
         role="listbox"
         :aria-activedescendant="
@@ -138,13 +142,13 @@
           :component-id="componentId"
           :select-option-from-base="handleOptionClickedFromSlot"
           :set-highlighted-index-from-base="
-            (index) => (highlightedIndex = index)
+            (index: number) => (highlightedIndex = index)
           "
           :search-text="props.searchText"
         >
           <li
             v-if="!filteredOptions || filteredOptions.length === 0"
-            class="relative cursor-default select-none py-2 px-3 text-gray-500 dark:text-gray-400 mt-0.5 mb-0.5"
+            class="relative cursor-default select-none py-2 px-3 text-gray-500 mt-0.5 mb-0.5"
             role="option"
           >
             {{ props.searchText ? "No results found" : "No options available" }}
@@ -159,11 +163,11 @@
               !option.disabled ? (highlightedIndex = index) : undefined
             "
             :class="[
-              'relative select-none py-2 px-3 text-gray-900 dark:text-white flex items-center gap-x-2 mb-0.5',
+              'relative select-none py-2 px-3 text-gray-900 flex items-center gap-x-2 mb-0.5',
               highlightedIndex === index && !option.disabled
-                ? 'bg-blue-50 dark:bg-blue-900/50'
+                ? 'bg-blue-50'
                 : option.isSelectedInMulti && !option.disabled
-                ? 'bg-blue-100 dark:bg-blue-700'
+                ? 'bg-blue-100'
                 : '',
               option.disabled
                 ? 'opacity-50 cursor-not-allowed'
@@ -199,8 +203,8 @@ import {
   onBeforeUnmount,
   defineAsyncComponent,
   nextTick,
+  useId,
 } from "vue";
-import { useId } from "#app";
 
 const IconChevronDown = defineAsyncComponent(
   () => import("./icons/IconChevronDown.vue")
@@ -302,22 +306,20 @@ const labelClasses = computed(() => {
   if (!props.label) return ["sr-only"];
 
   const baseStyles = [
-    "absolute z-10 left-3 pointer-events-none",
+    "absolute z-10 font-semibold  left-3 pointer-events-none",
     "transform-origin-top-left transition-all duration-200 ease-in-out",
   ];
 
   let colorClass = "";
   if (isLabelActive.value) {
-    if (props.disabled) colorClass = "text-gray-400 dark:text-gray-500";
-    else if (props.error) colorClass = "text-red-600 dark:text-red-500";
-    else if (isFocused.value) colorClass = "text-blue-600 dark:text-blue-500";
-    else colorClass = "text-gray-700 dark:text-gray-300";
+    if (props.disabled) colorClass = "text-gray-400";
+    else if (props.error) colorClass = "text-red-600";
+    else if (isFocused.value) colorClass = "text-blue-600";
+    else colorClass = "text-gray-900";
   } else {
-    if (props.error) colorClass = "text-red-600 dark:text-red-500";
-    else if (props.disabled) colorClass = "text-gray-400 dark:text-gray-500";
-    else
-      colorClass =
-        "text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300";
+    if (props.error) colorClass = "text-red-600";
+    else if (props.disabled) colorClass = "text-gray-400";
+    else colorClass = "text-gray-900 font-semibold";
   }
 
   const sizeAndPositionClasses = isLabelActive.value
@@ -339,15 +341,15 @@ const internalSearchInputPlaceholder = computed(() => {
 
 const frameVisualClasses = computed(() => {
   if (props.disabled) {
-    return "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 !ring-0";
+    return "bg-gray-100 border-gray-300 !ring-0";
   }
   if (props.error) {
-    return "border-red-500 dark:border-red-500 ring-1 ring-red-500 bg-white dark:bg-gray-900 focus-within:border-red-500 dark:focus-within:border-red-500";
+    return "border-red-500 ring-1 ring-red-500 bg-white focus-within:border-red-500";
   }
   if (isFocused.value) {
-    return "border-blue-600 dark:border-blue-500 ring-1 ring-blue-600 bg-white dark:bg-gray-900";
+    return "border-blue-600 ring-1 ring-blue-600 bg-white";
   }
-  return "bg-gray-50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus-within:border-blue-600 dark:focus-within:border-blue-500";
+  return "bg-gray-200 border-gray-50 hover:bg-gray-100 hover:border-gray-100 focus-within:border-blue-600";
 });
 
 const supportingTextResolved = computed(() => {
@@ -359,10 +361,10 @@ const supportingTextResolved = computed(() => {
 const supportingTextClasses = computed(() => [
   "mt-1.5 ml-3 text-xs",
   props.disabled
-    ? "text-gray-400 dark:text-gray-500"
+    ? "text-gray-400"
     : props.error
-    ? "text-red-600 dark:text-red-500"
-    : "text-gray-500 dark:text-gray-400",
+    ? "text-red-600"
+    : "text-gray-500",
 ]);
 
 const ariaLabelledByIds = computed(() => {

@@ -4,7 +4,7 @@
       @click="toggleDropdown"
       type="button"
       :class="[
-        'inline-flex items-center justify-center px-4 py-2 rounded-full shadow-sm text-base font-medium cursor-pointer',
+        'inline-flex items-center justify-center pl-5 pr-4 py-2 rounded-full shadow-sm text-base font-medium cursor-pointer',
         'bg-black text-white hover:bg-gray-800',
       ]"
       aria-haspopup="listbox"
@@ -236,8 +236,3 @@ defineExpose({
   toggle: toggleDropdown,
 });
 </script>
-
-<style scoped>
-input[type="checkbox"]:indeterminate + span {
-}
-</style>

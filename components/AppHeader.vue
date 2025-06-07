@@ -1,6 +1,6 @@
 <template>
   <header
-    class="page-header fixed top-0 left-0 w-full z-50"
+    class="page-header fixed top-0 left-0 w-full z-40"
     :class="{ scrolled: isScrolled }"
   >
     <NuxtLink to="/" class="no-underline">

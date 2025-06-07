@@ -31,6 +31,10 @@
         :class="inputFinalClasses"
         :aria-labelledby="props.label ? inputId + '-label-sr' : undefined"
         v-bind="$attrs"
+        style="
+          transition: border-color 0.2s ease-in-out,
+            background-color 0.2s ease-in-out;
+        "
       />
       <div
         v-if="effectiveTrailingIconName"
@@ -90,8 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent, useAttrs } from "vue";
-import { useId } from "#app";
+import { ref, computed, defineAsyncComponent, useAttrs, useId } from "vue";
 
 const IconEye = defineAsyncComponent(() => import("./icons/IconEye.vue"));
 const IconEyeOff = defineAsyncComponent(() => import("./icons/IconEyeOff.vue"));
@@ -188,7 +191,6 @@ const effectiveTrailingIconName = computed<IconName | undefined>(() => {
 
 function getIconComponent(
   name?: IconName,
-  isError?: boolean,
   isDisabled?: boolean
 ) {
   if (name === "eye" && isDisabled && !props.error)
@@ -231,7 +233,7 @@ const labelClasses = computed(() => {
   if (!props.label) return ["sr-only"];
 
   const baseStyles = [
-    "absolute z-10 pointer-events-none",
+    "absolute z-10 font-semibold pointer-events-none",
     "transform-origin-top-left transition-all duration-200 ease-in-out",
     props.leadingIconName ? "left-10" : "left-3",
   ];
@@ -241,21 +243,20 @@ const labelClasses = computed(() => {
   let colorClass = "";
 
   if (props.disabled) {
-    colorClass = "text-gray-400 dark:text-gray-500";
+    colorClass = "text-gray-400";
   } else if (props.error) {
-    colorClass = "text-red-600 dark:text-red-500";
+    colorClass = "text-red-600";
   } else if (isFocused.value) {
-    colorClass = "text-blue-600 dark:text-blue-500";
+    colorClass = "text-blue-600";
   } else if (hasValue.value) {
-    colorClass = "text-gray-700 dark:text-gray-300";
+    colorClass = "text-gray-900";
   } else {
-    colorClass =
-      "text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300";
+    colorClass = "text-gray-900";
   }
   finalClasses.push(colorClass);
 
   if (isPositionActive) {
-    finalClasses.push("text-xs scale-75 top-1.5 -translate-x-2");
+    finalClasses.push("text-xs scale-75 top-1.5 -translate-x-1");
   } else {
     finalClasses.push("top-3.5 text-base");
   }
@@ -264,8 +265,8 @@ const labelClasses = computed(() => {
 
 const inputFinalClasses = computed(() => {
   const base = [
-    "w-full h-14 px-3 py-3 text-base rounded-2xl border outline-none bg-transparent",
-    "text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400",
+    "w-full bg-gray-200 h-14 px-3 py-3 text-base rounded-2xl border outline-none",
+    "text-gray-900 placeholder-gray-500",
     "disabled:text-gray-500 dark:disabled:text-gray-400",
     props.label ? "pt-6" : "py-3",
     props.leadingIconName ? "!pl-10" : "",
@@ -293,8 +294,7 @@ const inputFinalClasses = computed(() => {
   }
   return [
     ...base,
-    "bg-gray-50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600",
-    "hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700",
+    "bg-gray-200 border-gray-50 hover:bg-gray-100 hover:border-gray-100",
   ];
 });
 

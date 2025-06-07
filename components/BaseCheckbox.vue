@@ -1,6 +1,7 @@
 <template>
   <div
     :class="['flex items-start', { 'opacity-50 cursor-not-allowed': disabled }]"
+    @click.stop
   >
     <input
       :id="checkboxId"
@@ -60,8 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, defineAsyncComponent, onMounted } from "vue";
-import { useId } from "#app";
+import {
+  computed,
+  ref,
+  watch,
+  defineAsyncComponent,
+  onMounted,
+  useId,
+} from "vue";
 
 const IconCheck = defineAsyncComponent(() => import("./icons/IconCheck.vue"));
 const IconMinus = defineAsyncComponent(() => import("./icons/IconMinus.vue"));

@@ -1,14 +1,16 @@
 <template>
   <div class="note-detail-container">
-    <BaseButton
-      variant="ghost"
-      color="secondary"
-      :icon="true"
-      iconName="back"
-      text="Back to all notes"
-      @click="handleBack"
-      class="back-button"
-    />
+    <div class="flex justify-end button-section">
+      <BaseButton
+        variant="ghost"
+        color="dark"
+        :icon="true"
+        iconName="edit"
+        text="Edit"
+        size="small"
+        @click="openEditModal"
+      />
+    </div>
     <BaseCard
       v-if="note"
       :title="note.title"
@@ -17,15 +19,29 @@
       :imageUrl="note.imageUrl"
       :checkboxItems="note.checkboxItems"
       :modelValue="note.selectedItems"
+      @update:modelValue="onCheckboxChange"
       :truncateDescription="false"
       :hoverable="false"
     />
+    <div class="flex justify-center items-center mt-5">
+      <BaseButton
+        variant="ghost"
+        color="secondary"
+        text="Back to all notes"
+        @click="handleBack"
+        size="small"
+        class="back-button"
+      />
+    </div>
+    <EditNoteModal v-if="note" ref="editNoteModal" @update="onNoteUpdate" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useNotes } from "~/composables/useNotes";
+import { useNotes, type Note } from "~/composables/useNotes";
+import EditNoteModal from "~/components/EditNoteModal.vue";
+import { ref } from "vue";
 
 definePageMeta({
   layout: "note",
@@ -35,21 +51,42 @@ const route = useRoute();
 const { findNote } = useNotes();
 const noteIdParam = route.params.id;
 const noteId = Array.isArray(noteIdParam) ? noteIdParam[0] : noteIdParam;
-const note = findNote(noteId);
 
-if (!note) {
+const note = ref<Note | undefined>(findNote(noteId));
+const editNoteModal = ref();
+
+if (!note.value) {
   await navigateTo("/", { replace: true });
 }
 
 // Set the browser tab title to the note's title
-if (note) {
+if (note.value) {
   useHead({
-    title: note.title,
+    title: note.value.title,
   });
 }
 
 const handleBack = () => {
   navigateTo("/");
+};
+
+const openEditModal = () => {
+  if (note.value) {
+    editNoteModal.value?.openModal(note.value);
+  }
+};
+
+const onNoteUpdate = (updatedNote: Note) => {
+  note.value = updatedNote;
+};
+
+const onCheckboxChange = (newSelectedItems: (string | number)[]) => {
+  if (note.value) {
+    const updatedNote = { ...note.value, selectedItems: newSelectedItems };
+    note.value = updatedNote;
+    const { updateNote } = useNotes();
+    updateNote(updatedNote);
+  }
 };
 </script>
 
@@ -60,7 +97,7 @@ const handleBack = () => {
   padding: 0 1rem;
 }
 
-.back-button {
-  margin-bottom: 2rem;
+.button-section {
+  margin-bottom: 1rem;
 }
 </style>

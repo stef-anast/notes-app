@@ -14,14 +14,14 @@
     :close-on-select="!props.multiple"
     @option-click="handleOptionClickFromBase"
   >
-    <template #trigger="{ isOpen, hasSelection, isLabelActive }">
+    <template #trigger="{ hasSelection, isLabelActive }">
       <span
         :class="[
-          'block truncate w-full',
+          'block truncate w-full pb-1',
           hasSelection
             ? 'text-gray-900 dark:text-white'
             : isLabelActive
-            ? 'text-gray-500 dark:text-gray-400'
+            ? 'text-gray-900 dark:text-gray-400'
             : 'text-transparent',
         ]"
       >
@@ -42,7 +42,7 @@
     >
       <li
         v-if="!slotOptions || slotOptions.length === 0"
-        class="relative cursor-default select-none py-2 px-3 text-gray-500 dark:text-gray-400 mt-0.5 mb-0.5"
+        class="relative cursor-default select-none py-2 px-3 text-gray-900 dark:text-gray-400 mt-0.5 mb-0.5"
         role="option"
       >
         No options available
@@ -155,8 +155,9 @@ const displayValue = computed(() => {
     if (props.modelValue.length === 0) {
       return props.placeholder;
     }
+    const selectedValues = props.modelValue;
     const selectedLabels = props.options
-      .filter((opt) => props.modelValue.includes(opt.value))
+      .filter((opt) => selectedValues.includes(opt.value))
       .map((opt) => opt.label);
 
     if (

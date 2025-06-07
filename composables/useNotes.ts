@@ -82,8 +82,39 @@ export const useNotes = () => {
     return notes.value.find((note) => note.id === noteId);
   };
 
+  const addNote = (note: Omit<Note, "id">) => {
+    const lastId =
+      notes.value.length > 0
+        ? Math.max(
+            ...notes.value.map((n) => (typeof n.id === "number" ? n.id : 0))
+          )
+        : 0;
+    const newNote: Note = {
+      ...note,
+      id: lastId + 1,
+    };
+    notes.value.push(newNote);
+  };
+
+  const updateNote = (updatedNote: Note) => {
+    const index = notes.value.findIndex((note) => note.id === updatedNote.id);
+    if (index !== -1) {
+      notes.value[index] = updatedNote;
+    }
+  };
+
+  const deleteNote = (noteId: string | number) => {
+    const index = notes.value.findIndex((note) => note.id === noteId);
+    if (index !== -1) {
+      notes.value.splice(index, 1);
+    }
+  };
+
   return {
     notes,
     findNote,
+    addNote,
+    updateNote,
+    deleteNote,
   };
 };
