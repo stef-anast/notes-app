@@ -14,14 +14,14 @@
     :close-on-select="!props.multiple"
     @option-click="handleOptionClickFromBase"
   >
-    <template #trigger="{ isOpen, hasSelection, isLabelActive }">
+    <template #trigger="{ hasSelection, isLabelActive }">
       <span
         :class="[
-          'block truncate w-full',
+          'block truncate w-full pb-1',
           hasSelection
-            ? 'text-gray-900 dark:text-white'
+            ? 'text-gray-900'
             : isLabelActive
-            ? 'text-gray-500 dark:text-gray-400'
+            ? 'text-gray-900'
             : 'text-transparent',
         ]"
       >
@@ -42,7 +42,7 @@
     >
       <li
         v-if="!slotOptions || slotOptions.length === 0"
-        class="relative cursor-default select-none py-2 px-3 text-gray-500 dark:text-gray-400 mt-0.5 mb-0.5"
+        class="relative cursor-default select-none py-2 px-3 text-gray-900 mt-0.5 mb-0.5"
         role="option"
       >
         No options available
@@ -55,12 +55,12 @@
           !option.disabled ? setHighlightedIndexFromBase(index) : undefined
         "
         :class="[
-          'relative select-none py-2 text-gray-900 dark:text-white flex items-center gap-x-2 mb-0.5',
+          'relative select-none py-2 text-gray-900 flex items-center gap-x-2 mb-0.5',
           multiple ? 'pl-3 pr-4' : 'px-3',
           slotHighlightedIndex === index && !option.disabled
-            ? 'bg-blue-50 dark:bg-blue-900/50'
+            ? 'bg-blue-50'
             : isSelected(option) && !option.disabled
-            ? 'bg-blue-100 dark:bg-blue-700'
+            ? 'bg-blue-100'
             : '',
           option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           'first:mt-0.5 last:mb-0.5',
@@ -76,9 +76,9 @@
               'w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center',
               isSelected(option) && !option.disabled
                 ? 'bg-blue-600 border-blue-600'
-                : 'bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-500',
+                : 'bg-white border-gray-400',
               option.disabled
-                ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700'
+                ? 'border-gray-300 bg-gray-100'
                 : '',
             ]"
             aria-hidden="true"
@@ -92,7 +92,7 @@
         <span
           :class="[
             'block truncate',
-            option.disabled ? 'text-gray-400 dark:text-gray-600' : '',
+            option.disabled ? 'text-gray-400' : '',
           ]"
         >
           {{ option.label }}
@@ -155,8 +155,9 @@ const displayValue = computed(() => {
     if (props.modelValue.length === 0) {
       return props.placeholder;
     }
+    const selectedValues = props.modelValue;
     const selectedLabels = props.options
-      .filter((opt) => props.modelValue.includes(opt.value))
+      .filter((opt) => selectedValues.includes(opt.value))
       .map((opt) => opt.label);
 
     if (

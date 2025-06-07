@@ -1,19 +1,20 @@
 <template>
-  <div class="relative" ref="dropdownWrapperRef">
+  <div class="relative font-inter" ref="dropdownWrapperRef">
     <button
       @click="toggleDropdown"
       type="button"
       :class="[
-        'inline-flex items-center justify-center px-4 py-2 rounded-full shadow-sm text-sm font-medium cursor-pointer',
-        'bg-black text-white hover:bg-gray-800',
-        'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
-        isOpen ? 'ring-2 ring-offset-2 ring-indigo-500' : '',
+        'inline-flex items-center justify-center pl-5 pr-4 py-2 rounded-full shadow-sm text-base font-medium',
+        props.disabled
+          ? 'bg-gray-700 text-white cursor-not-allowed'
+          : 'bg-black text-white hover:bg-gray-800 cursor-pointer',
       ]"
       aria-haspopup="listbox"
       :aria-expanded="isOpen"
+      :disabled="props.disabled"
     >
       Filter
-      <IconFilterBars class="w-4 h-4 ml-1.5 text-white" />
+      <IconFilterBars class="w-4 h-4 ml-1.5" />
     </button>
     <transition
       leave-active-class="transition ease-in duration-100"
@@ -23,7 +24,7 @@
       <div
         v-if="isOpen"
         ref="optionsListRef"
-        class="absolute z-10 mt-2 w-56 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-lg focus:outline-none py-1"
+        class="absolute z-10 mt-2 w-32 origin-top-right rounded-xl bg-white shadow-lg focus:outline-none"
         role="listbox"
         tabindex="-1"
       >
@@ -34,13 +35,13 @@
             v-if="props.options && props.options.length > 0"
             @click.stop="handleSelectAllClick"
             :class="[
-              'relative select-none py-2.5 px-4 text-sm text-gray-900 dark:text-white flex items-center gap-x-3 mb-0.5',
+              'relative rounded-t-xl select-none py-2.5 px-4 text-sm text-gray-900 flex items-center gap-x-3 mb-0.5',
               (isAllSelected || isIndeterminate) && !props.disabled
-                ? 'bg-blue-100 dark:bg-blue-700'
+                ? 'bg-blue-100'
                 : '',
               props.disabled
                 ? 'opacity-50 cursor-not-allowed'
-                : 'cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/50',
+                : 'cursor-pointer hover:bg-blue-50',
             ]"
             role="option"
             aria-label="Select all options"
@@ -49,7 +50,7 @@
               type="checkbox"
               :checked="isAllSelected"
               :indeterminate="isIndeterminate"
-              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700 dark:checked:bg-indigo-500"
+              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               tabindex="-1"
             />
             <span class="block">All</span>
@@ -60,13 +61,12 @@
             :key="option.value?.toString() ?? index + '-fallback'"
             @click.stop="handleOptionClick(option)"
             :class="[
-              'relative select-none py-2.5 px-4 text-sm text-gray-900 dark:text-white flex items-center gap-x-3 mb-0.5',
-              isSelected(option) && !option.disabled
-                ? 'bg-blue-100 dark:bg-blue-700'
-                : '',
+              'relative select-none py-2.5 px-4 text-sm text-gray-900 flex items-center gap-x-3',
+              isSelected(option) && !option.disabled ? 'bg-blue-100' : '',
               option.disabled
                 ? 'opacity-50 cursor-not-allowed'
-                : 'cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/50',
+                : 'cursor-pointer hover:bg-blue-50',
+              index === props.options.length - 1 ? 'rounded-b-xl' : 'mb-0.5',
             ]"
             role="option"
             :aria-selected="isSelected(option)"
@@ -76,7 +76,7 @@
               type="checkbox"
               :checked="isSelected(option)"
               :disabled="option.disabled"
-              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700 dark:checked:bg-indigo-500"
+              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               tabindex="-1"
               @click.stop
               @change="() => handleOptionClick(option)"
@@ -85,7 +85,7 @@
           </li>
           <li
             v-if="!props.options || props.options.length === 0"
-            class="relative cursor-default select-none py-2.5 px-4 text-sm text-gray-500 dark:text-gray-400 mb-0.5"
+            class="relative cursor-default select-none py-2.5 px-4 text-sm text-gray-500 mb-0.5"
             role="option"
           >
             No options available
@@ -237,8 +237,3 @@ defineExpose({
   toggle: toggleDropdown,
 });
 </script>
-
-<style scoped>
-input[type="checkbox"]:indeterminate + span {
-}
-</style>

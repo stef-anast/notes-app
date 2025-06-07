@@ -1,11 +1,18 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 16 16"
+    viewBox="0 0 24 24"
     fill="currentColor"
-    aria-hidden="true"
   >
-    <path d="M4 8a1 1 0 011-1h6a1 1 0 110 2H5a1 1 0 01-1-1z" />
+    <circle
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      stroke-width="2"
+      fill="none"
+    />
+    <path d="M17 13H7v-2h10z"></path>
   </svg>
 </template>
 

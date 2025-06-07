@@ -26,8 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useAttrs } from "vue";
-import { useId } from "#app";
+import { ref, computed, useAttrs, useId } from "vue";
 
 interface Props {
   modelValue: string;
@@ -73,7 +72,7 @@ const wrapperClasses = computed(() => [
 
 const labelClasses = computed(() => {
   const baseStyles = [
-    "absolute z-10 left-3 pointer-events-none",
+    "absolute z-10 font-semibold left-3 pointer-events-none",
     "transform-origin-top-left transition-all duration-200 ease-in-out",
   ];
 
@@ -85,17 +84,16 @@ const labelClasses = computed(() => {
 
   // Determine color first based on priority
   if (props.disabled) {
-    colorClass = "text-gray-400 dark:text-gray-500";
+    colorClass = "text-gray-400";
   } else if (props.error) {
-    colorClass = "text-red-600 dark:text-red-500";
+    colorClass = "text-red-600";
   } else if (isFocused.value) {
-    colorClass = "text-blue-600 dark:text-blue-500";
+    colorClass = "text-blue-600";
   } else if (hasValue.value) {
-    colorClass = "text-gray-700 dark:text-gray-300";
+    colorClass = "text-gray-900";
   } else {
     // Default color for placeholder-like label when not disabled, error, focused, or filled
-    colorClass =
-      "text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300";
+    colorClass = "text-gray-900";
   }
   finalClasses.push(colorClass);
 
@@ -114,42 +112,40 @@ const labelClasses = computed(() => {
 const textareaFinalClasses = computed(() => {
   const baseClasses = [
     "w-full p-3 pt-6 text-base rounded-2xl border outline-none resize-y",
-    "text-gray-900 dark:text-white",
-    props.disabled
-      ? "placeholder-gray-400 dark:placeholder-gray-600"
-      : "placeholder-gray-500 dark:placeholder-gray-400",
+    "text-gray-900",
+    props.disabled ? "placeholder-gray-400" : "placeholder-gray-500",
   ];
 
   let stateSpecificClasses = [];
 
   if (props.disabled) {
     stateSpecificClasses = [
-      "bg-gray-100 dark:bg-gray-800",
-      "text-gray-500 dark:text-gray-400",
+      "bg-gray-100",
+      "text-gray-500",
       "cursor-not-allowed",
-      "border-gray-300 dark:border-gray-600",
+      "border-gray-300",
       "!ring-0",
     ];
   } else if (props.error) {
     stateSpecificClasses = [
-      "bg-white dark:bg-gray-900",
-      "border-red-500 dark:border-red-500",
-      "ring-1 ring-red-500 dark:ring-red-500",
-      "focus:border-red-500 dark:focus:border-red-500",
+      "bg-white",
+      "border-red-500",
+      "ring-1 ring-red-500",
+      "focus:border-red-500",
     ];
   } else if (isFocused.value) {
     stateSpecificClasses = [
-      "bg-white dark:bg-gray-900",
-      "border-blue-500 dark:border-blue-500",
-      "ring-1 ring-blue-500 dark:ring-blue-500",
+      "bg-white",
+      "border-blue-500",
+      "ring-1 ring-blue-500",
     ];
   } else {
     // Default and Filled (unfocused, not error, not disabled)
     stateSpecificClasses = [
-      "bg-gray-50 dark:bg-gray-700/50",
-      "border-gray-300 dark:border-gray-600",
-      "hover:border-gray-400 dark:hover:border-gray-500",
-      "hover:bg-gray-100 dark:hover:bg-gray-700",
+      "bg-gray-200",
+      "border-gray-50",
+      "hover:border-gray-100",
+      "hover:bg-gray-100",
     ];
   }
   return [...baseClasses, ...stateSpecificClasses];
@@ -158,31 +154,21 @@ const textareaFinalClasses = computed(() => {
 const supportingTextClasses = computed(() => [
   "mt-1.5 ml-3 text-xs",
   props.disabled
-    ? "text-gray-400 dark:text-gray-500"
+    ? "text-gray-400"
     : props.error
-    ? "text-red-600 dark:text-red-500"
-    : "text-gray-500 dark:text-gray-400",
+    ? "text-red-600"
+    : "text-gray-500",
 ]);
 </script>
 
 <style scoped>
 textarea {
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out,
-    background-color 0.2s ease-in-out;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
   box-sizing: border-box;
 }
 
 textarea::placeholder {
-  color: currentColor; /* Make placeholder inherit text color for easier state control */
+  color: currentColor;
   opacity: 0.6;
-}
-
-/* Ensure dark mode placeholder is visible if needed */
-.dark textarea::placeholder {
-  /* color: #9ca3af; /* Tailwind gray-400 if specific color needed */
-}
-
-textarea::-webkit-resizer {
-  /* Custom styling for resizer if needed */
 }
 </style>
