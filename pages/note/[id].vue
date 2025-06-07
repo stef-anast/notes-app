@@ -23,7 +23,7 @@
       :truncateDescription="false"
       :hoverable="false"
     />
-    <div class="flex justify-center items-center mt-5">
+    <div class="flex justify-center items-center mt-6 pb-6">
       <BaseButton
         variant="ghost"
         color="secondary"
