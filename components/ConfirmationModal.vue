@@ -7,7 +7,7 @@
     persistent
   >
     <template #body>
-      <p class="text-gray-600 dark:text-gray-300">
+      <p class="text-gray-600">
         {{ props.message }}
       </p>
     </template>

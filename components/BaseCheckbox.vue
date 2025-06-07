@@ -17,7 +17,7 @@
     <label
       :for="checkboxId"
       :class="[
-        'relative w-5 h-5 rounded border flex-shrink-0 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-white dark:peer-focus-visible:ring-offset-gray-800',
+        'relative w-5 h-5 rounded border flex-shrink-0 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-white',
         checkboxVisualClasses,
         disabled ? 'cursor-not-allowed' : 'cursor-pointer',
       ]"
@@ -41,7 +41,7 @@
         v-if="label"
         :for="checkboxId"
         :class="[
-          'block text-sm font-medium text-gray-800 dark:text-gray-200',
+          'block text-sm font-medium text-gray-800',
           disabled ? 'cursor-not-allowed' : 'cursor-pointer',
         ]"
       >
@@ -50,7 +50,7 @@
       <p
         v-if="description"
         :class="[
-          'text-xs text-gray-500 dark:text-gray-400',
+          'text-xs text-gray-500',
           disabled ? 'cursor-not-allowed' : '',
         ]"
       >
@@ -114,14 +114,14 @@ const isChecked = computed(() => {
 const checkboxVisualClasses = computed(() => {
   if (props.disabled) {
     return isChecked.value || props.indeterminate
-      ? "bg-gray-300 border-gray-300 dark:bg-gray-600 dark:border-gray-600"
-      : "bg-gray-100 border-gray-300 dark:bg-gray-700 dark:border-gray-600";
+      ? "bg-gray-300 border-gray-300"
+      : "bg-gray-100 border-gray-300";
   }
   if (isChecked.value || props.indeterminate) {
-    return "bg-blue-600 border-blue-600 hover:bg-blue-700 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-blue-500";
+    return "bg-blue-600 border-blue-600 hover:bg-blue-700 peer-focus-visible:ring-blue-500";
   }
   // Unchecked
-  return "bg-white border-gray-400 hover:border-blue-600 peer-focus-visible:ring-blue-500 dark:bg-gray-700 dark:border-gray-500 dark:hover:border-blue-500";
+  return "bg-white border-gray-400 hover:border-blue-600 peer-focus-visible:ring-blue-500";
 });
 
 watch(

@@ -91,7 +91,7 @@ const props = defineProps<{
 
 const isModalOpen = ref(false);
 const selectedType = ref<NoteType | "">(
-  props.initialNote?.type ?? NoteType.Default
+  props.initialNote?.type ?? ""
 );
 const noteTitle = ref(props.initialNote?.title ?? "");
 const noteDescription = ref(props.initialNote?.description ?? "");
@@ -174,7 +174,7 @@ const isActionDisabled = computed(() => {
 });
 
 const resetForm = () => {
-  selectedType.value = props.initialNote?.type ?? NoteType.Default;
+  selectedType.value = props.initialNote?.type ?? "";
   noteTitle.value = props.initialNote?.title ?? "";
   noteDescription.value = props.initialNote?.description ?? "";
   imageFile.value = null;

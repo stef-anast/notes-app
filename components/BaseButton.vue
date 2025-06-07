@@ -115,14 +115,14 @@ const colorClasses: Record<
   },
   ghost: {
     primary:
-      "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus-visible:ring-blue-600",
+      "text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-600",
     secondary:
-      "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 focus-visible:ring-gray-500",
+      "text-gray-600 hover:bg-gray-100 focus-visible:ring-gray-500",
     danger:
-      "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible:ring-red-500",
+      "text-red-600 hover:bg-red-50 focus-visible:ring-red-500",
     success:
-      "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 focus-visible:ring-green-600",
-    dark: "text-gray-800 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-700/50 focus-visible:ring-gray-800",
+      "text-green-600 hover:bg-green-50 focus-visible:ring-green-600",
+    dark: "text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-800",
   },
 };
 

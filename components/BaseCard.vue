@@ -1,14 +1,11 @@
 <template>
   <div
     :class="[
-      'base-card-wrapper bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4 font-inter h-full',
+      'base-card-wrapper bg-white rounded-xl p-6 space-y-4 font-inter h-full',
       { 'is-hoverable': hoverable },
     ]"
   >
-    <h3
-      v-if="title"
-      class="text-xl font-semibold text-gray-900 dark:text-white"
-    >
+    <h3 v-if="title" class="text-xl font-semibold text-gray-900">
       {{ title }}
     </h3>
 
@@ -21,15 +18,15 @@
       />
       <div
         v-else
-        class="w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center my-4"
+        class="w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center my-4"
       >
-        <span class="text-gray-400 dark:text-gray-500">Image placeholder</span>
+        <span class="text-gray-400">Image placeholder</span>
       </div>
     </template>
 
     <p
       v-if="description"
-      class="text-gray-600 dark:text-gray-300 leading-relaxed"
+      class="text-gray-600 leading-relaxed"
       :class="{
         'truncate-3-lines': type === NoteType.Image && truncateDescription,
       }"
@@ -122,6 +119,7 @@ const toggleCheckboxItem = (itemId: string | number) => {
 .truncate-3-lines {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

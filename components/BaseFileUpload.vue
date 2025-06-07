@@ -8,8 +8,8 @@
     @drop.prevent="handleDrop"
     :class="[
       isDraggingOver
-        ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30'
-        : 'border-blue-500 bg-gray-100 dark:bg-gray-800/30 hover:bg-blue-50 dark:hover:bg-blue-900/30',
+        ? 'border-blue-600 bg-blue-50'
+        : 'border-blue-500 bg-gray-100 hover:bg-blue-50',
     ]"
     role="button"
     tabindex="0"
@@ -32,31 +32,28 @@
         <IconCloudArrowUp class="w-6 h-6 text-white" />
       </div>
 
-      <p class="text-sm text-gray-900 dark:text-gray-300">
-        <span class="font-semibold text-blue-600 dark:text-blue-400"
+      <p class="text-sm text-gray-900">
+        <span class="font-semibold text-blue-600"
           >Click to upload</span
         >
         or drag and drop
       </p>
-      <p class="mt-1 text-xs text-gray-800 dark:text-gray-400">
+      <p class="mt-1 text-xs text-gray-800">
         {{ acceptedFileTypesText }}
       </p>
 
       <div v-if="selectedFile" class="mt-4 text-sm text-center">
-        <p class="font-semibold text-gray-700 dark:text-gray-200">
+        <p class="font-semibold text-gray-700">
           Selected file: {{ selectedFile.name }}
         </p>
         <button
           @click.stop="clearFile"
-          class="mt-2 text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none cursor-pointer"
+          class="mt-2 text-xs text-red-500 hover:text-red-700 focus:outline-none cursor-pointer"
         >
           Remove file
         </button>
       </div>
-      <p
-        v-if="errorMessage"
-        class="mt-2 text-xs text-red-500 dark:text-red-400"
-      >
+      <p v-if="errorMessage" class="mt-2 text-xs text-red-500">
         {{ errorMessage }}
       </p>
     </div>

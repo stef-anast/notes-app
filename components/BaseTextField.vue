@@ -71,13 +71,7 @@
           "
         >
           <component
-            :is="
-              getIconComponent(
-                effectiveTrailingIconName,
-                props.error,
-                props.disabled
-              )
-            "
+            :is="getIconComponent(effectiveTrailingIconName)"
             :class="iconClasses('trailing')"
             aria-hidden="true"
           />
@@ -189,12 +183,7 @@ const effectiveTrailingIconName = computed<IconName | undefined>(() => {
   return props.trailingIconName;
 });
 
-function getIconComponent(
-  name?: IconName,
-  isDisabled?: boolean
-) {
-  if (name === "eye" && isDisabled && !props.error)
-    return iconComponents["eye-disabled"];
+function getIconComponent(name?: IconName) {
   if (name) return iconComponents[name];
   return null;
 }
@@ -267,30 +256,24 @@ const inputFinalClasses = computed(() => {
   const base = [
     "w-full bg-gray-200 h-14 px-3 py-3 text-base rounded-2xl border outline-none",
     "text-gray-900 placeholder-gray-500",
-    "disabled:text-gray-500 dark:disabled:text-gray-400",
+    "disabled:text-gray-500",
     props.label ? "pt-6" : "py-3",
     props.leadingIconName ? "!pl-10" : "",
     effectiveTrailingIconName.value ? "!pr-10" : "",
   ];
 
   if (props.disabled) {
-    return [
-      ...base,
-      "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 cursor-not-allowed !ring-0",
-    ];
+    return [...base, "bg-gray-100 border-gray-300 cursor-not-allowed !ring-0"];
   }
   if (props.error) {
     return [
       ...base,
-      "border-red-500 dark:border-red-500 ring-1 ring-red-500 bg-white dark:bg-gray-900",
-      "focus:border-red-500 dark:focus:border-red-500",
+      "border-red-500 ring-1 ring-red-500 bg-white",
+      "focus:border-red-500",
     ];
   }
   if (isFocused.value) {
-    return [
-      ...base,
-      "border-blue-500 dark:border-blue-500 ring-1 ring-blue-500 bg-white dark:bg-gray-900",
-    ];
+    return [...base, "border-blue-500 ring-1 ring-blue-500 bg-white"];
   }
   return [
     ...base,
@@ -308,21 +291,21 @@ const inputPlaceholder = computed(() => {
 const iconClasses = (type: "leading" | "trailing") => {
   let baseClasses = ["w-5 h-5"];
   if (props.disabled) {
-    baseClasses.push("text-gray-400 dark:text-gray-500");
+    baseClasses.push("text-gray-400");
   } else if (
     props.error &&
     type === "trailing" &&
     effectiveTrailingIconName.value === "error"
   ) {
-    baseClasses.push("text-red-500 dark:text-red-500");
+    baseClasses.push("text-red-500");
   } else if (
     isFocused.value &&
     type === "trailing" &&
     !(props.type === "password" && props.autoTogglePasswordVisibility)
   ) {
-    baseClasses.push("text-blue-500 dark:text-blue-400");
+    baseClasses.push("text-blue-500");
   } else {
-    baseClasses.push("text-gray-500 dark:text-gray-400");
+    baseClasses.push("text-gray-500");
   }
   if (
     props.type === "password" &&
@@ -331,12 +314,7 @@ const iconClasses = (type: "leading" | "trailing") => {
     !props.error &&
     !props.disabled
   ) {
-    return [
-      "w-5 h-5",
-      isFocused.value
-        ? "text-blue-500 dark:text-blue-400"
-        : "text-gray-500 dark:text-gray-400",
-    ];
+    return ["w-5 h-5", isFocused.value ? "text-blue-500" : "text-gray-500"];
   }
   return baseClasses;
 };
@@ -351,10 +329,10 @@ const supportingTextResolved = computed(() => {
 const supportingTextClasses = computed(() => [
   "mt-1.5 ml-3 text-xs",
   props.disabled
-    ? "text-gray-400 dark:text-gray-500"
+    ? "text-gray-400"
     : props.error
-    ? "text-red-600 dark:text-red-500"
-    : "text-gray-500 dark:text-gray-400",
+    ? "text-red-600"
+    : "text-gray-500",
 ]);
 </script>
 

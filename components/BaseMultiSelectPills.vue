@@ -30,13 +30,13 @@
       <span
         v-for="option in selectedOptions.slice(0, maxVisiblePillsComputed)"
         :key="option.value?.toString() + '-pill'"
-        class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-gray-700 dark:bg-blue-700 dark:text-gray-200 shrink-0"
+        class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-gray-700 shrink-0"
       >
         {{ option.label }}
         <button
           type="button"
           @click.stop="deselectOption(option)"
-          class="ml-1.5 -mr-0.5 flex-shrink-0 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 focus:outline-none cursor-pointer"
+          class="ml-1.5 -mr-0.5 flex-shrink-0 text-gray-600 hover:text-gray-800 focus:outline-none cursor-pointer"
           :aria-label="`Remove ${option.label}`"
           :disabled="props.disabled"
         >
@@ -46,7 +46,7 @@
 
       <span
         v-if="selectedOptions.length > maxVisiblePillsComputed"
-        class="text-xs font-medium text-gray-500 dark:text-gray-400 shrink-0"
+        class="text-xs font-medium text-gray-500 shrink-0"
       >
         +{{ selectedOptions.length - maxVisiblePillsComputed }}
       </span>
@@ -63,7 +63,7 @@
     >
       <li
         v-if="!slotOptions || slotOptions.length === 0"
-        class="relative cursor-default select-none py-2 px-3 text-gray-500 dark:text-gray-400 mt-0.5 mb-0.5"
+        class="relative cursor-default select-none py-2 px-3 text-gray-500 mt-0.5 mb-0.5"
         role="option"
       >
         {{ searchText ? "No results found" : "No options available" }}
@@ -76,11 +76,11 @@
           !option.disabled ? setHighlightedIndexFromBase(index) : undefined
         "
         :class="[
-          'relative select-none py-2 pl-3 pr-4 text-gray-900 dark:text-white flex items-center gap-x-2 mb-0.5',
+          'relative select-none py-2 pl-3 pr-4 text-gray-900 flex items-center gap-x-2 mb-0.5',
           slotHighlightedIndex === index && !option.disabled
-            ? 'bg-blue-50 dark:bg-blue-900/50'
+            ? 'bg-blue-50'
             : isSelected(option) && !option.disabled
-            ? 'bg-blue-100 dark:bg-blue-700'
+            ? 'bg-blue-100'
             : '',
           option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           'first:mt-0.5 last:mb-0.5',
@@ -95,9 +95,9 @@
             'w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center',
             isSelected(option) && !option.disabled
               ? 'bg-blue-600 border-blue-600'
-              : 'bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-500',
+              : 'bg-white border-gray-400',
             option.disabled
-              ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700'
+              ? 'border-gray-300 bg-gray-100'
               : '',
           ]"
           aria-hidden="true"
@@ -110,7 +110,7 @@
         <span
           :class="[
             'block truncate',
-            option.disabled ? 'text-gray-400 dark:text-gray-600' : '',
+            option.disabled ? 'text-gray-400' : '',
           ]"
         >
           {{ option.label }}

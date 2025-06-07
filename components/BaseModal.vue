@@ -11,7 +11,7 @@
     >
       <div
         v-if="props.modelValue"
-        class="font-inter fixed inset-0 z-50 flex items-center justify-center bg-gray-500/50 backdrop-blur-xs dark:bg-gray-900/80 p-4"
+        class="font-inter fixed inset-0 z-50 flex items-center justify-center bg-gray-500/50 backdrop-blur-xs p-4"
         @mousedown.self="closeModal"
         role="dialog"
         aria-modal="true"
@@ -28,13 +28,13 @@
         >
           <div
             v-if="props.modelValue"
-            class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+            class="relative bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
           >
             <!-- Header -->
             <div
               class="flex items-center justify-between p-5 flex-shrink-0"
               :class="{
-                'border-b border-gray-200 dark:border-gray-700':
+                'border-b border-gray-200':
                   !props.hideHeaderBorder,
               }"
             >
@@ -61,7 +61,7 @@
             <!-- Body -->
             <div class="pt-1 px-5 overflow-y-auto flex-grow space-y-4">
               <slot name="body">
-                <p class="text-gray-600 dark:text-gray-300">
+                <p class="text-gray-600">
                   Modal body content goes here.
                 </p>
               </slot>
@@ -72,7 +72,7 @@
               v-if="hasFooterSlot"
               class="flex items-center justify-end p-5 flex-shrink-0 space-x-3"
               :class="{
-                'border-t border-gray-200 dark:border-gray-700':
+                'border-t border-gray-200':
                   !props.hideFooterBorder,
               }"
             >
