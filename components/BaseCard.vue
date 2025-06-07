@@ -26,7 +26,7 @@
 
     <p
       v-if="description"
-      class="text-gray-600 leading-relaxed"
+      class="text-gray-600 leading-relaxed overflow-hidden"
       :class="{
         'truncate-3-lines': type === NoteType.Image && truncateDescription,
       }"
