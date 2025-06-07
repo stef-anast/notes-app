@@ -104,7 +104,7 @@ export const useNotesStore = defineStore("notes", {
   },
 
   actions: {
-    addNote(note: Omit<Note, "id">) {
+    addNote(note: Omit<Note, "id">): Note {
       const lastId =
         this.notes.length > 0 ? Math.max(...this.notes.map((n) => n.id)) : 0;
       const newNote: Note = {
@@ -112,6 +112,7 @@ export const useNotesStore = defineStore("notes", {
         id: lastId + 1,
       };
       this.notes.push(newNote);
+      return newNote;
     },
 
     updateNote(updatedNote: Note) {

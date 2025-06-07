@@ -33,7 +33,7 @@
         class="back-button"
       />
     </div>
-    <EditNoteModal v-if="note" ref="editNoteModal" @update="onNoteUpdate" />
+    <EditNoteModal v-if="note" ref="editNoteModal" />
   </div>
 </template>
 
@@ -42,7 +42,7 @@ import { useRoute } from "vue-router";
 import { useNotesStore } from "~/store/notes";
 import type { Note } from "~/types";
 import EditNoteModal from "~/components/EditNoteModal.vue";
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 
 definePageMeta({
   layout: "note",
@@ -53,19 +53,22 @@ const notesStore = useNotesStore();
 const noteIdParam = route.params.id;
 const noteId = Array.isArray(noteIdParam) ? noteIdParam[0] : noteIdParam;
 
-const note = ref<Note | undefined>(notesStore.findNote(noteId));
+const note = computed(() => notesStore.findNote(noteId));
 const editNoteModal = ref();
 
-if (!note.value) {
-  await navigateTo("/", { replace: true });
-}
+watch(
+  note,
+  (newNote) => {
+    if (!newNote) {
+      navigateTo("/", { replace: true });
+    }
+  },
+  { immediate: true }
+);
 
-// Set the browser tab title to the note's title
-if (note.value) {
-  useHead({
-    title: note.value.title,
-  });
-}
+useHead(() => ({
+  title: note.value?.title || "Note",
+}));
 
 const handleBack = () => {
   navigateTo("/");
@@ -77,14 +80,9 @@ const openEditModal = () => {
   }
 };
 
-const onNoteUpdate = (updatedNote: Note) => {
-  note.value = updatedNote;
-};
-
 const onCheckboxChange = (newSelectedItems: string[]) => {
   if (note.value) {
     const updatedNote = { ...note.value, selectedItems: newSelectedItems };
-    note.value = updatedNote;
     notesStore.updateNote(updatedNote);
   }
 };
