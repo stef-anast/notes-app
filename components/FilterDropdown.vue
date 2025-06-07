@@ -4,14 +4,17 @@
       @click="toggleDropdown"
       type="button"
       :class="[
-        'inline-flex items-center justify-center pl-5 pr-4 py-2 rounded-full shadow-sm text-base font-medium cursor-pointer',
-        'bg-black text-white hover:bg-gray-800',
+        'inline-flex items-center justify-center pl-5 pr-4 py-2 rounded-full shadow-sm text-base font-medium',
+        props.disabled
+          ? 'bg-gray-700 text-white cursor-not-allowed'
+          : 'bg-black text-white hover:bg-gray-800 cursor-pointer',
       ]"
       aria-haspopup="listbox"
       :aria-expanded="isOpen"
+      :disabled="props.disabled"
     >
       Filter
-      <IconFilterBars class="w-4 h-4 ml-1.5 text-white" />
+      <IconFilterBars class="w-4 h-4 ml-1.5" />
     </button>
     <transition
       leave-active-class="transition ease-in duration-100"
@@ -59,9 +62,7 @@
             @click.stop="handleOptionClick(option)"
             :class="[
               'relative select-none py-2.5 px-4 text-sm text-gray-900 flex items-center gap-x-3',
-              isSelected(option) && !option.disabled
-                ? 'bg-blue-100'
-                : '',
+              isSelected(option) && !option.disabled ? 'bg-blue-100' : '',
               option.disabled
                 ? 'opacity-50 cursor-not-allowed'
                 : 'cursor-pointer hover:bg-blue-50',

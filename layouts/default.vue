@@ -9,6 +9,7 @@
             :modelValue="selectedFilters"
             :options="filterOptions"
             @update:modelValue="selectedFilters = $event"
+            :disabled="notes.length === 0"
           />
           <BaseButton
             class="add-new-button"
@@ -19,7 +20,9 @@
           />
         </div>
       </section>
-      <section class="card-grid">
+      <section
+        :class="notes.length > 0 ? 'card-grid' : 'flex-grow flex flex-col'"
+      >
         <slot />
       </section>
     </main>
@@ -30,7 +33,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
+import { useNotes } from "~/composables/useNotes";
 
+const { notes } = useNotes();
 const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
 
 const openCreateNoteModal = () => {
@@ -65,6 +70,8 @@ const filterOptions = ref([
 .main-content {
   flex-grow: 1;
   padding: 6rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-header {
