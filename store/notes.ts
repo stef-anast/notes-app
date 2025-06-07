@@ -74,11 +74,32 @@ const initialNotes: Note[] = [
     description:
       "Tracking financial performance and market trends to make informed investment decisions.",
   },
+  {
+    id: 7,
+    title: "Meeting Agenda",
+    type: NoteType.Default,
+    description:
+      "Key discussion points for tomorrow's quarterly review meeting. Topics include budget allocation, team performance metrics, upcoming project deadlines, and resource planning for Q2.",
+  },
+  {
+    id: 8,
+    title: "Daily Tasks",
+    type: NoteType.Checkbox,
+    description: "Today's priority tasks and activities to complete.",
+    checkboxItems: [
+      { id: "email", label: "Check and respond to emails" },
+      { id: "report", label: "Finish quarterly report" },
+      { id: "meeting", label: "Prepare presentation slides" },
+      { id: "review", label: "Review team proposals" },
+    ],
+    selectedItems: ["email"],
+  },
 ];
 
 export const useNotesStore = defineStore("notes", {
   state: () => ({
     notes: [...initialNotes] as Note[],
+    selectedFilters: [] as NoteType[],
   }),
 
   getters: {
@@ -87,6 +108,15 @@ export const useNotesStore = defineStore("notes", {
         const noteId = typeof id === "string" ? parseInt(id, 10) : id;
         return state.notes.find((note) => note.id === noteId);
       };
+    },
+
+    filteredNotes: (state) => {
+      if (state.selectedFilters.length === 0) {
+        return state.notes;
+      }
+      return state.notes.filter((note) =>
+        state.selectedFilters.includes(note.type)
+      );
     },
   },
 
@@ -117,6 +147,20 @@ export const useNotesStore = defineStore("notes", {
       if (index !== -1) {
         this.notes.splice(index, 1);
       }
+    },
+
+    setFilters(filters: NoteType[]) {
+      this.selectedFilters = filters;
+    },
+
+    addFilter(filter: NoteType) {
+      if (!this.selectedFilters.includes(filter)) {
+        this.selectedFilters.push(filter);
+      }
+    },
+
+    removeFilter(filter: NoteType) {
+      this.selectedFilters = this.selectedFilters.filter((f) => f !== filter);
     },
   },
 });
