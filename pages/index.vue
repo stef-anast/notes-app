@@ -1,7 +1,7 @@
 <template>
-  <template v-if="notesStore.notes.length > 0">
+  <template v-if="notesStore.filteredNotes.length > 0">
     <NuxtLink
-      v-for="note in notesStore.notes"
+      v-for="note in notesStore.filteredNotes"
       :key="note.id"
       :to="`/note/${note.id}`"
       class="no-underline"
@@ -24,11 +24,23 @@
     class="flex text-center justify-center flex-grow items-center font-inter pb-24"
   >
     <div>
-      <p class="text-lg text-gray-400 font-light">
+      <p
+        v-if="notesStore.notes.length === 0"
+        class="text-lg text-gray-400 font-light"
+      >
         You don't have any notes yet.
       </p>
-      <p class="mt-4 text-xl text-gray-500 font-light">
+      <p v-else class="text-lg text-gray-400 font-light">
+        No notes match the selected filters.
+      </p>
+      <p
+        v-if="notesStore.notes.length === 0"
+        class="mt-4 text-xl text-gray-500 font-light"
+      >
         Click "Add New" to get started!
+      </p>
+      <p v-else class="mt-4 text-xl text-gray-500 font-light">
+        Try adjusting your filters or add a new note.
       </p>
     </div>
   </div>

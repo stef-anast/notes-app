@@ -3,7 +3,7 @@
     <AppHeader />
     <main class="main-content">
       <section class="content-header">
-        <h2 class="font-semibold font-inter">Title</h2>
+        <h2 class="font-semibold font-inter">Notes</h2>
         <div class="actions">
           <div v-if="selectedFilters.length" class="flex items-center">
             <div
@@ -36,7 +36,9 @@
       </section>
       <section
         :class="
-          notesStore.notes.length > 0 ? 'card-grid' : 'flex-grow flex flex-col'
+          notesStore.filteredNotes.length > 0
+            ? 'card-grid'
+            : 'flex-grow flex flex-col'
         "
       >
         <slot />
@@ -49,7 +51,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
-import { useNotesStore } from "~/store/notes";
+import { useNotesStore, NoteType } from "~/store/notes";
 import IconClose from "~/components/icons/IconClose.vue";
 
 const notesStore = useNotesStore();
@@ -59,22 +61,24 @@ const openCreateNoteModal = () => {
   createNoteModal.value?.openModal();
 };
 
-const selectedFilters = ref<(string | number)[]>([]);
+const selectedFilters = computed({
+  get: () => notesStore.selectedFilters,
+  set: (value: NoteType[]) => notesStore.setFilters(value),
+});
+
 const filterOptions = ref([
-  { value: "type1", label: "Type 1" },
-  { value: "type2", label: "Type 2" },
-  { value: "type3", label: "Type 3" },
+  { value: NoteType.Default, label: "Default" },
+  { value: NoteType.Image, label: "Image" },
+  { value: NoteType.Checkbox, label: "Checkbox" },
 ]);
 
-const getFilterLabel = (value: string | number) => {
+const getFilterLabel = (value: NoteType) => {
   const option = filterOptions.value.find((opt) => opt.value === value);
   return option ? option.label : "";
 };
 
-const removeFilter = (filterToRemove: string | number) => {
-  selectedFilters.value = selectedFilters.value.filter(
-    (filter) => filter !== filterToRemove
-  );
+const removeFilter = (filterToRemove: NoteType) => {
+  notesStore.removeFilter(filterToRemove);
 };
 
 const sortedSelectedFilters = computed(() => {
