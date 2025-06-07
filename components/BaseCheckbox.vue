@@ -23,12 +23,14 @@
       ]"
       @click.prevent="handleLabelClick"
     >
-      <IconCheck
+      <component
         v-if="isChecked && !indeterminate"
+        :is="getIconComponent('check')"
         class="w-[18px] h-[18px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-white"
       />
-      <IconMinus
+      <component
         v-if="indeterminate"
+        :is="getIconComponent('minus')"
         class="w-[18px] h-[18px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-white"
       />
     </label>
@@ -49,10 +51,7 @@
       </label>
       <p
         v-if="description"
-        :class="[
-          'text-xs text-gray-500',
-          disabled ? 'cursor-not-allowed' : '',
-        ]"
+        :class="['text-xs text-gray-500', disabled ? 'cursor-not-allowed' : '']"
       >
         {{ description }}
       </p>
@@ -61,17 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-  defineAsyncComponent,
-  onMounted,
-  useId,
-} from "vue";
+import { computed, ref, watch, onMounted, useId } from "vue";
+import { useIcons } from "~/composables/useIcons";
 
-const IconCheck = defineAsyncComponent(() => import("./icons/IconCheck.vue"));
-const IconMinus = defineAsyncComponent(() => import("./icons/IconMinus.vue"));
+const { getIconComponent } = useIcons();
 
 interface Props {
   modelValue?: boolean | string | number | any[]; // for array v-model with multiple checkboxes

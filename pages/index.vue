@@ -55,10 +55,7 @@ useHead({
   title: "Test project",
 });
 
-const onCheckboxChange = (
-  noteId: string | number,
-  newSelectedItems: (string | number)[]
-) => {
+const onCheckboxChange = (noteId: number, newSelectedItems: string[]) => {
   const noteToUpdate = notesStore.notes.find((n) => n.id === noteId);
   if (noteToUpdate) {
     const updatedNote = { ...noteToUpdate, selectedItems: newSelectedItems };

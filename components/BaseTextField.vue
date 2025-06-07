@@ -88,34 +88,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent, useAttrs, useId } from "vue";
-
-const IconEye = defineAsyncComponent(() => import("./icons/IconEye.vue"));
-const IconEyeOff = defineAsyncComponent(() => import("./icons/IconEyeOff.vue"));
-const IconEyeDisabled = defineAsyncComponent(
-  () => import("./icons/IconEyeDisabled.vue")
-);
-const IconClock = defineAsyncComponent(() => import("./icons/IconClock.vue"));
-const IconChevronDown = defineAsyncComponent(
-  () => import("./icons/IconChevronDown.vue")
-);
-const IconError = defineAsyncComponent(() => import("./icons/IconError.vue"));
-
-const iconComponents = {
-  eye: IconEye,
-  "eye-off": IconEyeOff,
-  "eye-disabled": IconEyeDisabled,
-  clock: IconClock,
-  "chevron-down": IconChevronDown,
-  error: IconError,
-} as const;
-
-export type IconName = keyof typeof iconComponents;
+import { ref, computed, useAttrs, useId } from "vue";
+import { useIcons } from "~/composables/useIcons";
+import type { IconName, InputType } from "~/types";
 
 interface Props {
   modelValue: string | number;
   label?: string;
-  type?: "text" | "password" | "email" | "number" | "tel" | "url";
+  type?: InputType;
   placeholder?: string;
   supportingText?: string;
   errorMessage?: string;
@@ -147,6 +127,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["update:modelValue", "focus", "blur"]);
 const attrs = useAttrs();
+const { getIconComponent } = useIcons();
 
 const providedId = computed(() => props.id || (attrs.id as string | undefined));
 const generatedInternalId = useId();
@@ -182,11 +163,6 @@ const effectiveTrailingIconName = computed<IconName | undefined>(() => {
   }
   return props.trailingIconName;
 });
-
-function getIconComponent(name?: IconName) {
-  if (name) return iconComponents[name];
-  return null;
-}
 
 const onFocus = (event: FocusEvent) => {
   isFocused.value = true;

@@ -81,23 +81,24 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import type { Note } from "~/store/notes";
-import { NoteType } from "~/store/notes";
+import type { Note, CheckboxItem } from "~/types";
+import { NoteType } from "~/types";
 
 const props = defineProps<{
   title: string;
-  initialNote?: Note;
+  initialNote?: Partial<Note>;
 }>();
 
 const isModalOpen = ref(false);
-const selectedType = ref<NoteType | "">(props.initialNote?.type ?? "");
+const selectedType = ref<NoteType | undefined>(props.initialNote?.type);
 const noteTitle = ref(props.initialNote?.title ?? "");
 const noteDescription = ref(props.initialNote?.description ?? "");
 const imageFile = ref<File | null>(null);
-const checkboxOptions = ref<{ id?: string | number; label: string }[]>(
-  props.initialNote?.checkboxItems?.map((item) => ({ ...item })) ?? [
-    { label: "" },
-  ]
+const checkboxOptions = ref<{ id?: string; label: string }[]>(
+  props.initialNote?.checkboxItems?.map((item: CheckboxItem) => ({
+    id: item.id,
+    label: item.label,
+  })) ?? [{ label: "" }]
 );
 
 watch(isModalOpen, (newValue) => {
@@ -133,7 +134,7 @@ const isDirty = computed(() => {
     return true;
   if (selectedType.value === NoteType.Checkbox) {
     const initialOptions = JSON.stringify(
-      props.initialNote.checkboxItems?.map((i) => i.label) || []
+      props.initialNote.checkboxItems?.map((i: CheckboxItem) => i.label) || []
     );
     const currentOptions = JSON.stringify(
       checkboxOptions.value.map((i) => i.label)
@@ -145,7 +146,11 @@ const isDirty = computed(() => {
 });
 
 const isActionDisabled = computed(() => {
-  if (selectedType.value === "" || !noteTitle.value || !noteDescription.value) {
+  if (
+    selectedType.value === undefined ||
+    !noteTitle.value ||
+    !noteDescription.value
+  ) {
     return true;
   }
   if (
@@ -172,13 +177,16 @@ const isActionDisabled = computed(() => {
 });
 
 const resetForm = () => {
-  selectedType.value = props.initialNote?.type ?? "";
+  selectedType.value = props.initialNote?.type;
   noteTitle.value = props.initialNote?.title ?? "";
   noteDescription.value = props.initialNote?.description ?? "";
   imageFile.value = null;
-  checkboxOptions.value = props.initialNote?.checkboxItems?.map((item) => ({
-    ...item,
-  })) ?? [{ label: "" }];
+  checkboxOptions.value = props.initialNote?.checkboxItems?.map(
+    (item: CheckboxItem) => ({
+      id: item.id,
+      label: item.label,
+    })
+  ) ?? [{ label: "" }];
 };
 
 const getFormData = () => {

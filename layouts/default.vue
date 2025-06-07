@@ -13,7 +13,8 @@
             >
               {{ getFilterLabel(filter) }}
               <button @click="removeFilter(filter)" class="focus:outline-none">
-                <IconClose
+                <component
+                  :is="getIconComponent('close')"
                   class="w-5 h-5 pt-0.25 text-gray-600 cursor-pointer hover:text-gray-800"
                 />
               </button>
@@ -51,8 +52,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
-import { useNotesStore, NoteType } from "~/store/notes";
-import IconClose from "~/components/icons/IconClose.vue";
+import { useNotesStore } from "~/store/notes";
+import { NoteType } from "~/types";
+import { useIcons } from "~/composables/useIcons";
+
+const { getIconComponent } = useIcons();
 
 const notesStore = useNotesStore();
 const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
@@ -62,7 +66,7 @@ const openCreateNoteModal = () => {
 };
 
 const selectedFilters = computed({
-  get: () => notesStore.selectedFilters,
+  get: () => Array.from(notesStore.selectedFilters),
   set: (value: NoteType[]) => notesStore.setFilters(value),
 });
 

@@ -39,7 +39,8 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useNotesStore, type Note } from "~/store/notes";
+import { useNotesStore } from "~/store/notes";
+import type { Note } from "~/types";
 import EditNoteModal from "~/components/EditNoteModal.vue";
 import { ref } from "vue";
 
@@ -80,7 +81,7 @@ const onNoteUpdate = (updatedNote: Note) => {
   note.value = updatedNote;
 };
 
-const onCheckboxChange = (newSelectedItems: (string | number)[]) => {
+const onCheckboxChange = (newSelectedItems: string[]) => {
   if (note.value) {
     const updatedNote = { ...note.value, selectedItems: newSelectedItems };
     note.value = updatedNote;

@@ -29,13 +29,14 @@
       <div
         class="w-12 h-12 mb-4 rounded-lg bg-blue-500 flex items-center justify-center shadow-md"
       >
-        <IconCloudArrowUp class="w-6 h-6 text-white" />
+        <component
+          :is="getIconComponent('cloud-arrow-up')"
+          class="w-6 h-6 text-white"
+        />
       </div>
 
       <p class="text-sm text-gray-900">
-        <span class="font-semibold text-blue-600"
-          >Click to upload</span
-        >
+        <span class="font-semibold text-blue-600">Click to upload</span>
         or drag and drop
       </p>
       <p class="mt-1 text-xs text-gray-800">
@@ -62,7 +63,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, useId } from "vue";
-import IconCloudArrowUp from "./icons/IconCloudArrowUp.vue";
+import { useIcons } from "~/composables/useIcons";
+
+const { getIconComponent } = useIcons();
 
 interface Props {
   modelValue: File | null;

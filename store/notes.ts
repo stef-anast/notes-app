@@ -1,105 +1,90 @@
 import { defineStore } from "pinia";
-
-export enum NoteType {
-  Default = 0,
-  Image = 1,
-  Checkbox = 2,
-}
-
-export interface Note {
-  id: string | number;
-  title: string;
-  description?: string;
-  type: NoteType;
-  imageUrl?: string;
-  imageAlt?: string;
-  checkboxItems?: { id: string | number; label: string }[];
-  selectedItems?: (string | number)[];
-}
+import type { Note } from "~/types";
+import { NoteType } from "~/types";
 
 const initialNotes: Note[] = [
   {
     id: 1,
-    title: "High-Five Moment",
-    type: NoteType.Image,
-    imageUrl:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop",
+    title: "Professional Development Goals",
+    type: NoteType.Default,
     description:
-      "A successful meeting concluding with a high-five. Represents teamwork and achievement.",
+      "Strategic objectives for career advancement and skill enhancement. Focus areas include leadership development, technical certifications, and cross-functional collaboration opportunities.",
   },
   {
     id: 2,
-    title: "Weekly Shopping List",
+    title: "Q4 Project Milestones",
     type: NoteType.Checkbox,
     description:
-      "Essential items to buy for the upcoming week. Check them off as you go.",
+      "Key deliverables and checkpoints for the quarterly objectives. Track progress and ensure timely completion.",
     checkboxItems: [
-      { id: "milk", label: "Milk" },
-      { id: "bread", label: "Bread" },
-      { id: "cheese", label: "Cheese" },
+      { id: "research", label: "Complete market research analysis" },
+      { id: "proposal", label: "Submit project proposal for review" },
+      { id: "stakeholder", label: "Schedule stakeholder meetings" },
+      { id: "documentation", label: "Update project documentation" },
     ],
-    selectedItems: ["bread"],
+    selectedItems: ["research"],
   },
   {
     id: 3,
-    title: "Project Brainstorm",
-    type: NoteType.Default,
+    title: "Team Collaboration Workshop",
+    type: NoteType.Image,
+    imageUrl:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2084&auto=format&fit=crop",
     description:
-      "Initial ideas and concepts for the new project launch. Includes key performance indicators, target audience analysis, and marketing strategies to explore. More detailed planning to follow in subsequent meetings.",
+      "Documentation from our recent team building and collaboration workshop focused on improving communication and workflow efficiency.",
   },
   {
     id: 4,
-    title: "Team Presentation",
-    type: NoteType.Image,
-    imageUrl:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1974&auto=format&fit=crop",
+    title: "Strategic Planning Session",
+    type: NoteType.Default,
     description:
-      "A snapshot from the last quarterly presentation. The team is discussing future goals and growth opportunities.",
+      "Notes from the annual strategic planning meeting. Key initiatives include digital transformation, sustainability goals, employee engagement programs, and market expansion strategies for the upcoming fiscal year.",
   },
   {
     id: 5,
-    title: "Cityscape View",
-    type: NoteType.Image,
-    imageUrl:
-      "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=2070&auto=format&fit=crop",
+    title: "Client Meeting Preparation",
+    type: NoteType.Checkbox,
     description:
-      "An inspiring view of the city at sunset. A reminder of the scale and beauty of urban environments.",
+      "Essential preparation items for upcoming client presentations and meetings.",
+    checkboxItems: [
+      { id: "agenda", label: "Prepare meeting agenda" },
+      { id: "materials", label: "Review presentation materials" },
+      { id: "logistics", label: "Confirm meeting logistics" },
+      { id: "followup", label: "Prepare follow-up action items" },
+    ],
+    selectedItems: ["agenda", "materials"],
   },
   {
     id: 6,
-    title: "Stock Market Analysis",
-    type: NoteType.Image,
-    imageUrl:
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2070&auto=format&fit=crop",
+    title: "Innovation Brainstorming",
+    type: NoteType.Default,
     description:
-      "Tracking financial performance and market trends to make informed investment decisions.",
+      "Creative ideas for process improvement and innovation initiatives. Exploring opportunities for automation, efficiency gains, and enhanced customer experience delivery.",
   },
   {
     id: 7,
-    title: "Meeting Agenda",
-    type: NoteType.Default,
+    title: "Professional Office Environment",
+    type: NoteType.Image,
+    imageUrl:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop",
     description:
-      "Key discussion points for tomorrow's quarterly review meeting. Topics include budget allocation, team performance metrics, upcoming project deadlines, and resource planning for Q2.",
+      "Modern office workspace promoting collaboration and productivity. An example of effective workplace design and organization.",
   },
   {
     id: 8,
-    title: "Daily Tasks",
-    type: NoteType.Checkbox,
-    description: "Today's priority tasks and activities to complete.",
-    checkboxItems: [
-      { id: "email", label: "Check and respond to emails" },
-      { id: "report", label: "Finish quarterly report" },
-      { id: "meeting", label: "Prepare presentation slides" },
-      { id: "review", label: "Review team proposals" },
-    ],
-    selectedItems: ["email"],
+    title: "Business Analytics Dashboard",
+    type: NoteType.Image,
+    imageUrl:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop",
+    description:
+      "Visual representation of key performance indicators and business metrics for data-driven decision making and strategic planning.",
   },
 ];
 
 export const useNotesStore = defineStore("notes", {
   state: () => ({
     notes: [...initialNotes] as Note[],
-    selectedFilters: [] as NoteType[],
+    selectedFilters: new Set<NoteType>(),
   }),
 
   getters: {
@@ -111,23 +96,17 @@ export const useNotesStore = defineStore("notes", {
     },
 
     filteredNotes: (state) => {
-      if (state.selectedFilters.length === 0) {
+      if (state.selectedFilters.size === 0) {
         return state.notes;
       }
-      return state.notes.filter((note) =>
-        state.selectedFilters.includes(note.type)
-      );
+      return state.notes.filter((note) => state.selectedFilters.has(note.type));
     },
   },
 
   actions: {
     addNote(note: Omit<Note, "id">) {
       const lastId =
-        this.notes.length > 0
-          ? Math.max(
-              ...this.notes.map((n) => (typeof n.id === "number" ? n.id : 0))
-            )
-          : 0;
+        this.notes.length > 0 ? Math.max(...this.notes.map((n) => n.id)) : 0;
       const newNote: Note = {
         ...note,
         id: lastId + 1,
@@ -143,24 +122,23 @@ export const useNotesStore = defineStore("notes", {
     },
 
     deleteNote(noteId: string | number) {
-      const index = this.notes.findIndex((note) => note.id === noteId);
+      const id = typeof noteId === "string" ? parseInt(noteId, 10) : noteId;
+      const index = this.notes.findIndex((note) => note.id === id);
       if (index !== -1) {
         this.notes.splice(index, 1);
       }
     },
 
     setFilters(filters: NoteType[]) {
-      this.selectedFilters = filters;
+      this.selectedFilters = new Set(filters);
     },
 
     addFilter(filter: NoteType) {
-      if (!this.selectedFilters.includes(filter)) {
-        this.selectedFilters.push(filter);
-      }
+      this.selectedFilters.add(filter);
     },
 
     removeFilter(filter: NoteType) {
-      this.selectedFilters = this.selectedFilters.filter((f) => f !== filter);
+      this.selectedFilters.delete(filter);
     },
   },
 });
