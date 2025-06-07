@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { defineStore } from "pinia";
 
 export enum NoteType {
   Default = 0,
@@ -17,7 +17,7 @@ export interface Note {
   selectedItems?: (string | number)[];
 }
 
-const notes = ref<Note[]>([
+const initialNotes: Note[] = [
   {
     id: 1,
     title: "High-Five Moment",
@@ -74,47 +74,49 @@ const notes = ref<Note[]>([
     description:
       "Tracking financial performance and market trends to make informed investment decisions.",
   },
-]);
+];
 
-export const useNotes = () => {
-  const findNote = (id: string | number) => {
-    const noteId = typeof id === "string" ? parseInt(id, 10) : id;
-    return notes.value.find((note) => note.id === noteId);
-  };
+export const useNotesStore = defineStore("notes", {
+  state: () => ({
+    notes: [...initialNotes] as Note[],
+  }),
 
-  const addNote = (note: Omit<Note, "id">) => {
-    const lastId =
-      notes.value.length > 0
-        ? Math.max(
-            ...notes.value.map((n) => (typeof n.id === "number" ? n.id : 0))
-          )
-        : 0;
-    const newNote: Note = {
-      ...note,
-      id: lastId + 1,
-    };
-    notes.value.push(newNote);
-  };
+  getters: {
+    findNote: (state) => {
+      return (id: string | number) => {
+        const noteId = typeof id === "string" ? parseInt(id, 10) : id;
+        return state.notes.find((note) => note.id === noteId);
+      };
+    },
+  },
 
-  const updateNote = (updatedNote: Note) => {
-    const index = notes.value.findIndex((note) => note.id === updatedNote.id);
-    if (index !== -1) {
-      notes.value[index] = updatedNote;
-    }
-  };
+  actions: {
+    addNote(note: Omit<Note, "id">) {
+      const lastId =
+        this.notes.length > 0
+          ? Math.max(
+              ...this.notes.map((n) => (typeof n.id === "number" ? n.id : 0))
+            )
+          : 0;
+      const newNote: Note = {
+        ...note,
+        id: lastId + 1,
+      };
+      this.notes.push(newNote);
+    },
 
-  const deleteNote = (noteId: string | number) => {
-    const index = notes.value.findIndex((note) => note.id === noteId);
-    if (index !== -1) {
-      notes.value.splice(index, 1);
-    }
-  };
+    updateNote(updatedNote: Note) {
+      const index = this.notes.findIndex((note) => note.id === updatedNote.id);
+      if (index !== -1) {
+        this.notes[index] = updatedNote;
+      }
+    },
 
-  return {
-    notes,
-    findNote,
-    addNote,
-    updateNote,
-    deleteNote,
-  };
-};
+    deleteNote(noteId: string | number) {
+      const index = this.notes.findIndex((note) => note.id === noteId);
+      if (index !== -1) {
+        this.notes.splice(index, 1);
+      }
+    },
+  },
+});

@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { NoteType } from "~/composables/useNotes";
+import { NoteType } from "~/store/notes";
 
 export interface CheckboxItem {
   id: string | number;

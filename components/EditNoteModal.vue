@@ -38,11 +38,11 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
-import type { Note } from "~/composables/useNotes";
-import { useNotes } from "~/composables/useNotes";
+import type { Note } from "~/store/notes";
+import { useNotesStore } from "~/store/notes";
 import ConfirmationModal from "./ConfirmationModal.vue";
 
-const { updateNote, deleteNote } = useNotes();
+const notesStore = useNotesStore();
 const baseNoteForm = ref();
 const noteToEdit = ref<Note | undefined>();
 const confirmationModal = ref();
@@ -56,7 +56,7 @@ const openModal = async (note: Note) => {
 };
 
 const handleSave = (formData: Note) => {
-  updateNote(formData);
+  notesStore.updateNote(formData);
   emit("update", formData);
   baseNoteForm.value?.closeModal();
 };
@@ -67,7 +67,7 @@ const requestDeleteConfirmation = () => {
 
 const handleDelete = () => {
   if (noteToEdit.value) {
-    deleteNote(noteToEdit.value.id);
+    notesStore.deleteNote(noteToEdit.value.id);
     baseNoteForm.value?.closeModal();
     navigateTo("/");
   }
