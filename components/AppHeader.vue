@@ -4,7 +4,7 @@
     :class="{ scrolled: isScrolled }"
   >
     <NuxtLink to="/" class="no-underline">
-      <div class="project-tag font-lexend">Test project</div>
+      <div class="project-tag font-lexend text-nowrap">Test project</div>
     </NuxtLink>
   </header>
 </template>
