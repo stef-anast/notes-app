@@ -5,21 +5,12 @@
       <section class="content-header">
         <h2 class="font-semibold font-inter">Notes</h2>
         <div class="actions">
-          <div v-if="selectedFilters.length" class="flex items-center">
-            <div
-              v-for="filter in sortedSelectedFilters"
-              :key="filter"
-              class="flex items-center gap-x-1.5 text-gray-800 font-semibold px-3"
-            >
-              {{ getFilterLabel(filter) }}
-              <button @click="removeFilter(filter)" class="focus:outline-none">
-                <component
-                  :is="getIconComponent('close')"
-                  class="w-5 h-5 pt-0.25 text-gray-600 cursor-pointer hover:text-gray-800"
-                />
-              </button>
-            </div>
-          </div>
+          <FilterChips
+            v-if="showFiltersInHeader"
+            :filters="selectedFilters"
+            :filterOptions="filterOptions"
+            @removeFilter="removeFilter"
+          />
           <FilterDropdown
             :modelValue="selectedFilters"
             :options="filterOptions"
@@ -28,13 +19,24 @@
           />
           <BaseButton
             class="add-new-button"
-            text="Add New"
+            :text="isSmallScreenSize ? undefined : 'Add New'"
             :icon="true"
             iconPosition="left"
+            :size="isSmallScreenSize ? 'icon' : 'medium'"
             @click="openCreateNoteModal"
           />
         </div>
       </section>
+      <div
+        v-if="showFiltersBelow"
+        class="actions flex justify-end mb-4 flex-wrap"
+      >
+        <FilterChips
+          :filters="selectedFilters"
+          :filterOptions="filterOptions"
+          @removeFilter="removeFilter"
+        />
+      </div>
       <section
         :class="
           notesStore.filteredNotes.length > 0
@@ -52,11 +54,13 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import CreateNoteModal from "~/components/CreateNoteModal.vue";
+import FilterChips from "~/components/FilterChips.vue";
 import { useNotesStore } from "~/store/notes";
 import { NoteType } from "~/types";
 import { useIcons } from "~/composables/useIcons";
+import { useViewport } from "~/composables/useViewport";
 
-const { getIconComponent } = useIcons();
+const { isSmallScreenSize, isMediumScreenSize } = useViewport();
 
 const notesStore = useNotesStore();
 const createNoteModal = ref<InstanceType<typeof CreateNoteModal> | null>(null);
@@ -76,17 +80,22 @@ const filterOptions = ref([
   { value: NoteType.Checkbox, label: "Checkbox" },
 ]);
 
-const getFilterLabel = (value: NoteType) => {
-  const option = filterOptions.value.find((opt) => opt.value === value);
-  return option ? option.label : "";
-};
-
 const removeFilter = (filterToRemove: NoteType) => {
   notesStore.removeFilter(filterToRemove);
 };
 
-const sortedSelectedFilters = computed(() => {
-  return [...selectedFilters.value].sort();
+const showFiltersInHeader = computed(() => {
+  return (
+    selectedFilters.value.length > 0 &&
+    !(isSmallScreenSize.value || isMediumScreenSize.value)
+  );
+});
+
+const showFiltersBelow = computed(() => {
+  return (
+    selectedFilters.value.length > 0 &&
+    (isSmallScreenSize.value || isMediumScreenSize.value)
+  );
 });
 </script>
 

@@ -5,13 +5,13 @@
     @keydown="handleKeydown"
   >
     <BaseButton
-      text="Filter"
+      :text="isSmallScreenSize ? undefined : 'Filter'"
       :icon="true"
       icon-name="filter-bars"
       icon-position="right"
       variant="solid"
       color="black"
-      size="medium"
+      :size="isSmallScreenSize ? 'icon' : 'medium'"
       :disabled="props.disabled"
       :aria-haspopup="'listbox'"
       :aria-expanded="dropdown.isOpen.value"
@@ -45,6 +45,7 @@ import { useDropdown } from "~/composables/useDropdown";
 import type { FilterDropdownOption } from "~/types";
 import DropdownOptionsList from "./dropdown/DropdownOptionsList.vue";
 import BaseButton from "./BaseButton.vue";
+import { useViewport } from "~/composables/useViewport";
 
 export type { FilterDropdownOption };
 
@@ -87,6 +88,8 @@ const dropdown = useDropdown(
 );
 
 const { dropdownWrapperRef } = dropdown;
+
+const { isSmallScreenSize } = useViewport();
 
 watch(
   () => props.disabled,
