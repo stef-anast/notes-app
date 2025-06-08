@@ -25,7 +25,11 @@
       :model-value="props.modelValue"
       :show-checkboxes="true"
       :show-select-all="true"
-      :custom-options-class="'absolute z-10 mt-2 w-32 origin-top-right rounded-xl bg-white shadow-lg focus:outline-none'"
+      :custom-options-class="`absolute z-10 mt-2 w-32 ${
+        isSmallScreenSize
+          ? 'right-0'
+          : 'left-0'
+      } rounded-xl bg-white shadow-lg focus:outline-none`"
       @option-click="handleOptionClick"
       @select-all-click="handleSelectAllClick"
     >
