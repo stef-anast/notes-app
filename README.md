@@ -1,6 +1,6 @@
 # Notes App
 
-A small SPA (single-page app) for notes using TS, Vue3, Nuxt3, Tailwind v4.
+A note-taking application built with Vue 3, Nuxt 3, Tailwind v4 and TypeScript featuring multiple note types, filtering, and a clean, responsive interface.
 
 ## Live Demo
 
